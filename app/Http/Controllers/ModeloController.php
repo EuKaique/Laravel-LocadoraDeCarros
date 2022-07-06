@@ -16,9 +16,34 @@ class ModeloController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $modelos = $this->modelo->all();
+        $modelos = [];
+        //Verifica se existe o paramêtro atributos_marca na requisição
+        if($request->has('atributos_marca')){
+            $atributos_marca = $request->atributos_marca;
+
+            $modelos = $this->modelo->with('marca:id'.$atributos_marca);
+        }else{
+            $modelos = $this->modelo->with('marca');
+        }
+        //Verifica se existe o paramêtro filtro na requisição
+        if($request->has('filtro')){
+            //Remove o : e transforma a requisição em um array
+            $condicao = explode(':', $request->filtro);
+            $modelos = $modelos->where($condicao[0], $condicao[1], $condicao[2]);
+        }else{
+
+        }
+        //Verifica se existe o paramêtro atributos na requisição
+        if($request->has('atributos')){
+            $atributos = $request->atributos;
+        
+            $modelos = $modelos->selectRaw($atributos)->get();
+        }else{
+            $modelos = $modelos->get();
+        }
+
         return response()->json($modelos, 200);
     }
 
@@ -61,7 +86,7 @@ class ModeloController extends Controller
      */
     public function show($id)
     {
-        $modelo = $this->modelo->find($id);
+        $modelo = $this->modelo->with('marca')->find($id);
 
         if($modelo === null){
             return response()->json(['erro' => 'O recurso solicitado não existe'], 404);
@@ -110,7 +135,7 @@ class ModeloController extends Controller
 
         $imagem = $request->file('imagem');
         $imagem_path = $imagem->store('imagens/modelo','public');
-
+        /*
         $modelo->update([
             'marca_id'      => $request->marca_id,
             'nome'          => $request->nome,
@@ -120,6 +145,12 @@ class ModeloController extends Controller
             'air_bag'       => $request->air_bag,
             'abs'           => $request->abs
         ]);
+        */
+
+        //Preencher o objeto marca com os dados do request
+        $modelo->fill($request->all());
+        $modelo->imagem = $imagem_path;
+        $modelo->save();
 
         return response()->json($modelo, 200);
     }
