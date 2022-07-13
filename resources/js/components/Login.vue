@@ -67,9 +67,9 @@
         },
         methods: {
             login(e){
-                let url = 'http://localhost:8000/login';
+                let url = 'http://localhost:8000/api/login';
                 let configuracao = {
-                    method: 'POST',
+                    method: 'post',
                     body: new URLSearchParams({
                         'email'    : this.email,
                         'password' : this.password
@@ -80,7 +80,7 @@
                     .then(data => {
 
                         if(data.token){
-                            document.cookie = 'token='+data.token+';SameSite=Lax';
+                            document.cookie = 'token='+data.token;
                         }
                         e.target.submit()
                     })
