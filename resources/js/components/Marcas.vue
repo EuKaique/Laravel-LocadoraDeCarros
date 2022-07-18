@@ -37,6 +37,10 @@
         </div>
         <!-- MODAL -->
         <modal-component id="modalMarcas" titulo="Adicionar marca">
+            <template v-slot:alertas>
+                <alert-component tipo="success" v-if="transacaoStatus == 'adicionado'" :detalhes="transacaoDetalhes" titulo="Marca adicionada com sucesso"></alert-component>
+                <alert-component tipo="danger"  v-if="transacaoStatus == 'erro'" :detalhes="transacaoDetalhes" titulo="Erro ao adicionar"></alert-component>
+            </template>
             <template v-slot:conteudo>
                 <div class="form-group">
                     <inputContainer-component id="novoNome">
@@ -75,10 +79,23 @@
             return {
                 urlBase: 'http://localhost:8000/api/v1/marca',
                 nomeMarca: '',
-                arquivoImagem: []
+                arquivoImagem: [],
+                transacaoStatus: '',
+                transacaoDetalhes: [],
+                marcas: []
             }
         },
         methods: {
+            carregarLista(){
+                axios.get(this.urlBase)
+                .then(response => {
+                    this.marcas = response.data
+                    console.log(this.marcas)
+                })
+                .catch(errors => {
+                    console.log(errors)
+                })
+            },
             carregarImagem(e){
                 this.arquivoImagem = e.target.files
             },
@@ -102,12 +119,24 @@
                     config
                 )
                 .then(response => {
+                    this.transacaoStatus = 'adicionado'
+                    this.transacaoDetalhes = {
+                        mensagem: 'ID da marca:' + response.data.id
+                    }
                     console.log(response)
                 })
                 .catch(errors => {
+                    this.transacaoStatus = 'erro'
+                    this.transacaoDetalhes = {
+                        mensagem: errors.response.data.message,
+                        dados: errors.response.data.errors
+                    }
                     console.log(errors)
                 })
             }
+        },
+        mounted(){
+            this.carregarLista()
         }
     }
 </script>
