@@ -26,7 +26,15 @@
                 <!-- INICIO DA LISTAGEM DE MARCAS -->
                 <card-component titulo="Listagem de marcas">
                     <template v-slot:conteudo>
-                        <table-component></table-component>
+                        <table-component 
+                            :dados="marcas.data" 
+                            :titulos="{
+                                id: { titulo: 'Id', tipo: 'text'},
+                                nome: { titulo: 'Nome', tipo: 'text'},
+                                imagem: { titulo: 'Imagem', tipo: 'imagem'},
+                                created_at: { titulo: 'Data de cadastro', tipo: 'data'},
+                            }">
+                        </table-component>
                     </template>
                     <template v-slot:rodape>
                         <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalMarcas">Adicionar</button>
@@ -82,7 +90,7 @@
                 arquivoImagem: [],
                 transacaoStatus: '',
                 transacaoDetalhes: [],
-                marcas: []
+                marcas: { data:[] }
             }
         },
         methods: {
