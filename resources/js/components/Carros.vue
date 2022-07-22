@@ -3,42 +3,35 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <!-- INICIO DA BUSCA DE MARCAS -->
-                <card-component titulo="Buscar marcas">
+                <card-component titulo="Buscar carros">
                     <template v-slot:conteudo>
                         <div class="row">
                             <div class="col mb-3">
                                 <inputContainer-component id="inputId" titulo="ID" help-id="helpID" texto-ajuda="Informe o ID (Opcional).">
-                                    <input type="number" class="form-control" id="inputID" aria-describedby="helpID" placeholder="ID" v-model="buscar.id">
+                                    <input type="number" class="form-control" id="inputID" aria-describedby="helpID" placeholder="ID">
                                 </inputContainer-component>
                             </div>
                             <div class="col mb-3">
                                 <inputContainer-component id="inputNome" titulo="Nome" help-id="helpNome" texto-ajuda="Informe o Nome (Opcional).">
-                                    <input type="text" class="form-control" id="inputNome" aria-describedby="helpNome" placeholder="Nome da marca" v-model="buscar.nome">
+                                    <input type="text" class="form-control" id="inputNome" aria-describedby="helpNome" placeholder="Nome do carro">
                                 </inputContainer-component>
                             </div> 
                         </div>  
                     </template>
                     <template v-slot:rodape>
-                        <div class="row">
-                            <div class="col">
-                                <button type="submit" class="btn btn-primary btn-sm" @click="pesquisar()">Pesquisar</button>
-                            </div>
-                            <div class="col-10">
-                                <button type="submit" class="btn btn-outline-primary btn-sm" @click="limpar()">Limpar</button>
-                            </div>
-                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm float-right">Pesquisar</button>
                     </template>
                 </card-component>
                 <!-- FIM DA BUSCA DE MARCAS -->
                 <!-- INICIO DA LISTAGEM DE MARCAS -->
-                <card-component titulo="Listagem de marcas">
+                <card-component titulo="Listagem de carros">
                     <template v-slot:conteudo>
                         <table-component 
-                            :dadosMarcas="marcas.data" 
+                            :dadosCarros="carros.data" 
                             :titulos="{
                                 id: { titulo: 'Id', tipo: 'text'},
-                                nome: { titulo: 'Nome', tipo: 'text'},
-                                imagem: { titulo: 'Imagem', tipo: 'imagem'},
+                                placa: { titulo: 'Placa', tipo: 'text'},
+                                disponivel: { titulo: 'Disponível', tipo: 'text'},
                                 created_at: { titulo: 'Data de cadastro', tipo: 'data'},
                             }">
                         </table-component>
@@ -47,13 +40,13 @@
                         <div class="row">
                             <div class="col-10">
                                 <paginate-component>
-                                    <li v-for="l, key in marcas.links" :key="key" :class="l.active ? 'page-item active' : 'page-item'">
+                                    <li v-for="l, key in carros.links" :key="key" :class="l.active ? 'page-item active' : 'page-item'">
                                         <a class="page-link" v-html="l.label" @click="paginacao(l)"></a>
                                     </li>
                                 </paginate-component>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalMarcas">Adicionar</button>
+                                <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalCarros">Adicionar</button>
                             </div>
                         </div>
                     </template>
@@ -62,20 +55,31 @@
             </div>
         </div>
         <!-- MODAL -->
-        <modal-component id="modalMarcas" titulo="Adicionar marca">
+        <modal-component id="modalCarros" titulo="Adicionar carro">
             <template v-slot:alertas>
-                <alert-component tipo="success" v-if="transacaoStatus == 'adicionado'" :detalhes="transacaoDetalhes" titulo="Marca adicionada com sucesso"></alert-component>
+                <alert-component tipo="success" v-if="transacaoStatus == 'adicionado'" :detalhes="transacaoDetalhes" titulo="Carro adicionado com sucesso"></alert-component>
                 <alert-component tipo="danger"  v-if="transacaoStatus == 'erro'" :detalhes="transacaoDetalhes" titulo="Erro ao adicionar"></alert-component>
             </template>
             <template v-slot:conteudo>
                 <div class="form-group">
-                    <inputContainer-component id="novoNome">
-                        <input type="text" class="form-control mb-2" id="novoNome" placeholder="Nome da marca" v-model="nomeMarca">
+                    <inputContainer-component id="placa" titulo="placa">
+                        <label for="placa" class="form-label">Placa</label>
+                        <input type="text" class="form-control mb-2" id="placa" placeholder="Placa do carro" v-model="placa">
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="novaImagem" titulo="Imagem">
-                        <input type="file" class="form-control-file mt-2" id="novaImagem" @change="carregarImagem($event)">
+                    <inputContainer-component id="modelo_id" titulo="Modelo ID">
+                        <input type="number" min="1" class="form-control mb-2" id="modelo_id" placeholder="Modelo do carro" v-model="modelo_id">
+                    </inputContainer-component>
+                </div>
+                <div class="form-group">
+                    <inputContainer-component id="disponivel" titulo="disponivel">
+                        <input type="number" min="0" max="1" class="form-control" id="disponivel" placeholder="0 é não, 1 é sim" v-model="disponivel">
+                    </inputContainer-component>
+                </div>
+                <div class="form-group">
+                    <inputContainer-component id="km" titulo="quilometro">
+                        <input type="number" min="0" class="form-control mb-2" id="km" placeholder="Km/h" v-model="km">
                     </inputContainer-component>
                 </div>
             </template>
@@ -88,10 +92,7 @@
 </template>
 
 <script>
-    import Paginate from './Paginate.vue'
-
     export default{
-        components: { Paginate },
         computed: {
             token(){
                 let token = document.cookie.split(';').find(indice => {
@@ -106,70 +107,40 @@
         },
         data(){
             return {
-                urlBase: 'http://localhost:8000/api/v1/marca',
-                urlPage: '',
-                urlFiltro: '',
-                nomeMarca: '',
-                arquivoImagem: [],
+                urlBase: 'http://localhost:8000/api/v1/carro',
                 transacaoStatus: '',
+                placa: '',
+                modelo_id: '',
+                disponivel: '',
+                km: '',
                 transacaoDetalhes: [],
-                marcas: { data:[] },
-                buscar: {
-                    id: '',
-                    nome: ''
-                }
+                carros: { data:[] }
             }
         },
         methods: {
-            paginacao(l){
-                if(l.url){
-                    this.urlPage = l.url.split('?')[1]
-                    this.carregarLista()
-                }
-            },
-            pesquisar(){
-                let filtro = ''
-
-                for(let chave in this.buscar){
-                    if(this.buscar[chave]){
-                        if(filtro != ''){
-                            filtro += ';'
-                        }
-                        filtro += chave + ':like:' + this.buscar[chave]
-                    }
-                }
-
-                if(filtro != ''){
-                    this.urlPage = 'page=1'
-                    this.urlFiltro = '&filtro=' + filtro
-                }else{
-                    this.urlFiltro = ''
-                }
-
-                this.carregarLista()
-            },
-            limpar(){
-                document.location.reload(true)
-            },
             carregarLista(){
-                let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
-                axios.get(url)
+                axios.get(this.urlBase)
                 .then(response => {
-                    this.marcas = response.data
-                    console.log(this.marcas)
+                    this.carros = response.data
+                    console.log(this.carros)
                 })
                 .catch(errors => {
                     console.log(errors)
                 })
             },
-            carregarImagem(e){
-                this.arquivoImagem = e.target.files
+            paginacao(l){
+                if(l.url){
+                    this.urlBase = l.url
+                    this.carregarLista()
+                }
             },
             salvar(){
                 let formData = new FormData()
 
-                formData.append('nome', this.nomeMarca)
-                formData.append('imagem', this.arquivoImagem[0])
+                formData.append('placa', this.placa)
+                formData.append('modelo_id', this.modelo_id)
+                formData.append('disponivel', this.disponivel)
+                formData.append('km', this.km)
 
                 let config = {
                     headers: {
@@ -180,16 +151,16 @@
                 }
 
                 axios.post(
-                    this.urlBase, 
-                    formData, 
+                    this.urlBase,
+                    formData,
                     config
                 )
                 .then(response => {
                     this.transacaoStatus = 'adicionado'
                     this.transacaoDetalhes = {
-                        mensagem: 'ID da marca:' + response.data.id
+                        mensagem: 'ID do carro:' + response.data.id
                     }
-                    console.log(response)
+                    document.location.reload(true)
                 })
                 .catch(errors => {
                     this.transacaoStatus = 'erro'
@@ -197,7 +168,7 @@
                         mensagem: errors.response.data.message,
                         dados: errors.response.data.errors
                     }
-                    console.log(errors)
+                    
                 })
             }
         },

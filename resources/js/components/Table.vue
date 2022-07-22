@@ -3,14 +3,47 @@
         <thead>
             <tr>
                 <th scope="col" v-for="t, key in titulos" :key="key">{{ t.titulo }}</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="m in dados" :key="m.id">
+            <!-- Dados de carros -->
+            <tr v-for="c in dadosCarros" :key="c.id">
+                <th scope="row">{{ c.id }}</th>
+                <td>{{ c.placa }}</td>
+                <td>{{ c.disponivel == 1 ? 'Sim' : 'Não' }}</td>
+                <td>{{ c.created_at.substring(0, 10) }}</td>
+                <td>
+                    <button class="btn btn-success">Ver</button>
+                    <button class="btn btn-primary">Editar</button>
+                    <button class="btn btn-danger">Excluir</button>
+                </td>
+            </tr>
+            <!-- Dados de marcas -->
+            <tr v-for="m in dadosMarcas" :key="m.id">
                 <th scope="row">{{ m.id }}</th>
                 <td>{{ m.nome }}</td>
                 <td><img :src="'/storage/' + m.imagem" width="30" height="30"></td>
-                <td>{{ m.created_at.substring(0, 10) + ' Ano-mês-dia' }}</td>
+                <td>{{ m.created_at.substring(0, 10) }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm">Ver</button>
+                    <button class="btn btn-primary btn-sm">Editar</button>
+                    <button class="btn btn-danger btn-sm">Excluir</button>
+                </td>
+            </tr>
+            <!-- Dados de modelos -->
+            <tr v-for="d in dadosModelos" :key="d.id">
+                <th scope="row">{{ d.id }}</th>
+                <td>{{ d.nome }}</td>
+                <td><img :src="'/storage/' + d.imagem" width="40" height="30"></td>
+                <td>{{ d.numero_portas }}</td>
+                <td>{{ d.air_bag == 1 ? 'Sim' : 'Não' }}</td>
+                <td>{{ d.created_at.substring(0, 10) }}</td>
+                <td>
+                    <button class="btn btn-success">Ver</button>
+                    <button class="btn btn-primary">Editar</button>
+                    <button class="btn btn-danger">Excluir</button>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -18,6 +51,6 @@
 
 <script>
     export default {
-        props: ['dados','titulos']
+        props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos']
     }
 </script>

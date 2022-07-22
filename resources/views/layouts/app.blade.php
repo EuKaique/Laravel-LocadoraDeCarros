@@ -45,11 +45,11 @@
                                     Veículos
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Carros</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('carros') }}">Carros</a></li>
                                     <div class="dropdown-divider"></div>
                                     <li><a class="dropdown-item" href="{{ route('marcas') }}">Marcas</a></li>
                                     <div class="dropdown-divider"></div>
-                                    <li><a class="dropdown-item" href="#">Modelos</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('modelos') }}">Modelos</a></li>
                                 </ul>
                             </li>
                         @endauth
