@@ -26,9 +26,9 @@
                 <td><img :src="'/storage/' + m.imagem" width="30" height="30"></td>
                 <td>{{ m.created_at.substring(0, 10) }}</td>
                 <td>
-                    <button class="btn btn-success btn-sm">Ver</button>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(m)">Ver</button>
                     <button class="btn btn-primary btn-sm">Editar</button>
-                    <button class="btn btn-danger btn-sm">Excluir</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(m)">Excluir</button>
                 </td>
             </tr>
             <!-- Dados de modelos -->
@@ -51,6 +51,11 @@
 
 <script>
     export default {
-        props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos']
+        props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos'],
+        methods: {
+            getId(id){
+                this.$store.state.item = id
+            }
+        }
     }
 </script>

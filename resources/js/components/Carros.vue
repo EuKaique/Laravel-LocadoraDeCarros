@@ -8,18 +8,25 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <inputContainer-component id="inputId" titulo="ID" help-id="helpID" texto-ajuda="Informe o ID (Opcional).">
-                                    <input type="number" class="form-control" id="inputID" aria-describedby="helpID" placeholder="ID">
+                                    <input type="number" class="form-control" id="inputID" aria-describedby="helpID" placeholder="ID" v-model="buscar.id">
                                 </inputContainer-component>
                             </div>
                             <div class="col mb-3">
-                                <inputContainer-component id="inputNome" titulo="Nome" help-id="helpNome" texto-ajuda="Informe o Nome (Opcional).">
-                                    <input type="text" class="form-control" id="inputNome" aria-describedby="helpNome" placeholder="Nome do carro">
+                                <inputContainer-component id="inputPlaca" titulo="Placa" help-id="helpPlaca" texto-ajuda="Informe a Placa (Opcional).">
+                                    <input type="text" class="form-control" id="inputPlaca" aria-describedby="helpPlaca" placeholder="Placa do carro" v-model="buscar.placa">
                                 </inputContainer-component>
                             </div> 
                         </div>  
                     </template>
                     <template v-slot:rodape>
-                        <button type="submit" class="btn btn-primary btn-sm float-right">Pesquisar</button>
+                        <div class="row">
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary btn-sm" @click="pesquisar()">Pesquisar</button>
+                            </div>
+                            <div class="col-10">
+                                <button type="submit" class="btn btn-outline-primary btn-sm" @click="limpar()">Limpar</button>
+                            </div>
+                        </div>
                     </template>
                 </card-component>
                 <!-- FIM DA BUSCA DE MARCAS -->
@@ -92,7 +99,10 @@
 </template>
 
 <script>
+    import Paginate from './Paginate.vue'
+
     export default{
+        components: { Paginate },
         computed: {
             token(){
                 let token = document.cookie.split(';').find(indice => {
@@ -108,18 +118,56 @@
         data(){
             return {
                 urlBase: 'http://localhost:8000/api/v1/carro',
+                urlPage: '',
+                urlFiltro: '',
                 transacaoStatus: '',
                 placa: '',
                 modelo_id: '',
                 disponivel: '',
                 km: '',
                 transacaoDetalhes: [],
-                carros: { data:[] }
+                carros: { data:[] },
+                buscar: {
+                    id: '',
+                    placa: ''
+                }
             }
         },
         methods: {
+            paginacao(l){
+                if(l.url){
+                    this.urlBase = l.url
+                    this.carregarLista()
+                }
+            },
+            pesquisar(){
+                let filtro = ''
+
+                for(let chave in this.buscar){
+                    if(this.buscar[chave]){
+                        if(filtro != ''){
+                            filtro += ';'
+                        }
+                        filtro += chave + ':like:' + this.buscar[chave]
+                    }
+                }
+
+                if(filtro != ''){
+                    this.urlPage = 'page=1'
+                    this.urlFiltro = '&filtro=' + filtro
+                }else{
+                    this.urlFiltro = ''
+                }
+
+                this.carregarLista()
+            },
+            limpar(){
+                document.location.reload(true)
+            },
             carregarLista(){
-                axios.get(this.urlBase)
+                let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
+
+                axios.get(url)
                 .then(response => {
                     this.carros = response.data
                     console.log(this.carros)
@@ -127,12 +175,6 @@
                 .catch(errors => {
                     console.log(errors)
                 })
-            },
-            paginacao(l){
-                if(l.url){
-                    this.urlBase = l.url
-                    this.carregarLista()
-                }
             },
             salvar(){
                 let formData = new FormData()

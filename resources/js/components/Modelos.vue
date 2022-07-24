@@ -7,19 +7,26 @@
                     <template v-slot:conteudo>
                         <div class="row">
                             <div class="col mb-3">
-                                <inputContainer-component id="inputId" titulo="ID" help-id="helpID" texto-ajuda="Informe o ID (Opcional).">
+                                <inputContainer-component id="inputId" titulo="ID" help-id="helpID" texto-ajuda="Informe o ID (Opcional)." v-model="buscar.id">
                                     <input type="number" class="form-control" id="inputID" aria-describedby="helpID" placeholder="ID">
                                 </inputContainer-component>
                             </div>
                             <div class="col mb-3">
                                 <inputContainer-component id="inputNome" titulo="Nome" help-id="helpNome" texto-ajuda="Informe o Nome (Opcional).">
-                                    <input type="text" class="form-control" id="inputNome" aria-describedby="helpNome" placeholder="Nome do modelo">
+                                    <input type="text" class="form-control" id="inputNome" aria-describedby="helpNome" placeholder="Nome do modelo" v-model="buscar.nome">
                                 </inputContainer-component>
                             </div> 
                         </div>  
                     </template>
                     <template v-slot:rodape>
-                        <button type="submit" class="btn btn-primary btn-sm float-right">Pesquisar</button>
+                        <div class="row">
+                            <div class="col">
+                                <button type="submit" class="btn btn-primary btn-sm" @click="pesquisar()">Pesquisar</button>
+                            </div>
+                            <div class="col-10">
+                                <button type="submit" class="btn btn-outline-primary btn-sm" @click="limpar()">Limpar</button>
+                            </div>
+                        </div>
                     </template>
                 </card-component>
                 <!-- FIM DA BUSCA DE MARCAS -->
@@ -64,7 +71,7 @@
             </template>
             <template v-slot:conteudo>
                 <div class="form-group">
-                    <inputContainer-component id="marca_id" titulo="Marca ID">
+                    <inputContainer-component id="marca_id" titulo="Marca">
                         <input type="text" class="form-control mb-2" id="marca_id" placeholder="ID da marca" v-model="marca_id">
                     </inputContainer-component>
                 </div>
@@ -108,7 +115,9 @@
 </template>
 
 <script>
+    import Paginate from './Paginate.vue'
     export default{
+        components: { Paginate },
         computed: {
             token(){
                 let token = document.cookie.split(';').find(indice => {
@@ -124,6 +133,8 @@
         data(){
             return {
                 urlBase: 'http://localhost:8000/api/v1/modelo',
+                urlPage: '',
+                urlFiltro: '',
                 nome: '',
                 arquivoImagem: [],
                 numero_portas: '',
@@ -132,12 +143,48 @@
                 abs: '',
                 transacaoStatus: '',
                 transacaoDetalhes: [],
-                modelos: { data:[] }
+                modelos: { data:[] },
+                buscar: {
+                    id: '',
+                    nome: ''
+                }
             }
         },
         methods: {
+            paginacao(l){
+                if(l.url){
+                    this.urlBase = l.url
+                    this.carregarLista()
+                }
+            },
+            pesquisar(){
+                let filtro = ''
+
+                for(let chave in this.buscar){
+                    if(this.buscar[chave]){
+                        if(filtro != ''){
+                            filtro += ';'
+                        }
+                        filtro += chave + ':like:' + this.buscar[chave]
+                    }
+                }
+
+                if(filtro != ''){
+                    this.urlPage = 'page=1'
+                    this.urlFiltro = '&filtro=' + filtro
+                }else{
+                    this.urlFiltro = ''
+                }
+
+                this.carregarLista()
+            },
+            limpar(){
+                document.location.reload(true)
+            },
             carregarLista(){
-                axios.get(this.urlBase)
+                let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
+
+                axios.get(url)
                 .then(response => {
                     this.modelos = response.data
                     console.log(this.modelos)
@@ -145,12 +192,6 @@
                 .catch(errors => {
                     console.log(errors)
                 })
-            },
-            paginacao(l){
-                if(l.url){
-                    this.urlBase = l.url
-                    this.carregarLista()
-                }
             },
             carregarImagem(e){
                 this.arquivoImagem = e.target.files
