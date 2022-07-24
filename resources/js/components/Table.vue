@@ -27,7 +27,7 @@
                 <td>{{ m.created_at.substring(0, 10) }}</td>
                 <td>
                     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(m)">Ver</button>
-                    <button class="btn btn-primary btn-sm">Editar</button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar" @click="getId(m)">Editar</button>
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(m)">Excluir</button>
                 </td>
             </tr>
@@ -54,6 +54,8 @@
         props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos'],
         methods: {
             getId(id){
+                this.$store.state.transacao.status = ''
+                this.$store.state.transacao.mensagem = ''
                 this.$store.state.item = id
             }
         }

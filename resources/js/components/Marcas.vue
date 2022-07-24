@@ -53,7 +53,7 @@
                                 </paginate-component>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalMarcas">Adicionar</button>
+                                <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar</button>
                             </div>
                         </div>
                     </template>
@@ -62,7 +62,7 @@
             </div>
         </div>
         <!-- INÍCIO MODAL DE ADICIONAR MARCA -->
-        <modal-component id="modalMarcas" titulo="Adicionar marca">
+        <modal-component id="modalAdicionar" titulo="Adicionar marca">
             <template v-slot:alertas>
                 <alert-component tipo="success" v-if="transacaoStatus == 'adicionado'" :detalhes="transacaoDetalhes" titulo="Marca adicionada com sucesso"></alert-component>
                 <alert-component tipo="danger"  v-if="transacaoStatus == 'erro'" :detalhes="transacaoDetalhes" titulo="Erro ao adicionar"></alert-component>
@@ -113,7 +113,11 @@
 
         <!-- INÍCIO MODAL DE REMOVER MARCA -->
         <modal-component id="modalRemover" titulo="Remover marca">
-            <template v-slot:conteudo>
+            <template v-slot:alertas>
+                <alert-component v-if="$store.state.transacao.status == 'sucesso'" tipo="success" :detalhes="$store.state.transacao" titulo="Registro removido com sucesso"></alert-component>
+                <alert-component v-if="$store.state.transacao.status == 'erro'" tipo="danger"  :detalhes="$store.state.transacao" titulo="Erro ao remover registro"></alert-component>
+            </template>
+            <template v-slot:conteudo v-if="$store.state.transacao.status != 'sucesso'">
                     <inputContainer-component titulo="ID">
                         <input type="text" class="form-control mb-2" :value="$store.state.item.id" disabled>
                     </inputContainer-component>
@@ -123,10 +127,35 @@
                     </inputContainer-component>
             </template>
             <template v-slot:rodape>
+                <button type="button" class="btn btn-danger" @click="remover()" v-if="$store.state.transacao.status != 'sucesso'">Excluir</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
             </template>
         </modal-component>
         <!-- FIM MODAL DE VISUALIZAR MARCA -->
+
+        <!-- INÍCIO MODAL DE ATUALIZAR MARCA -->
+        <modal-component id="modalEditar" titulo="Atualizar marca">
+            <template v-slot:alertas>
+
+            </template>
+            <template v-slot:conteudo>
+                <div class="form-group">
+                    <inputContainer-component id="atualizarNome">
+                        <input type="text" class="form-control mb-2" id="atualizarNome" placeholder="Nome da marca" v-model="$store.state.item.nome">
+                    </inputContainer-component>
+                </div>
+                <div class="form-group">
+                    <inputContainer-component id="atualizarImagem" titulo="Imagem">
+                        <input type="file" class="form-control-file mt-2" id="atualizarImagem" @change="carregarImagem($event)">
+                    </inputContainer-component>
+                </div>
+            </template>
+            <template v-slot:rodape>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" @click="atualizar()">Atualizar</button>
+            </template>
+        </modal-component>
+        <!-- FIM MODAL DE ATUALIZAR MARCA -->
     </div>
 </template>
 
@@ -164,6 +193,71 @@
             }
         },
         methods: {
+            atualizar(){
+                let url = this.urlBase + '/' + this.$store.state.item.id
+                let formData = new FormData()
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Accept': 'Application/json',
+                        'Authorization': this.token
+                    }
+                }
+
+                formData.append('_method', 'patch')
+                formData.append('nome', this.$store.state.item.nome)
+
+                if(this.arquivoImagem[0]){
+                    formData.append('imagem', this.arquivoImagem[0])
+                }
+
+                axios.post(url,formData,config)
+                     .then(response => {
+
+                        console.log('Atualizado com sucesso', response)
+                        atualizarImagem.value = ''
+                        this.carregarLista()
+
+                     })
+                     .catch(errors => {
+
+                        console.log('Erro ao atualizar', errors)
+
+                     })  
+            },
+            remover(){
+                let confirmacao = confirm('Quer mesmo remover o registro?')
+
+                if(!confirmacao){
+                    return false
+                }
+
+                let url = this.urlBase + '/' + this.$store.state.item.id
+                let formData = new FormData()
+                let config = {
+                    headers: {
+                        'Accept': 'Application/json',
+                        'Authorization': this.token
+                    }
+                }
+
+                formData.append('_method', 'delete')
+
+                axios.post(url,formData,config)
+                     .then(response => {
+
+                        this.$store.state.transacao.status = 'sucesso'
+                        this.$store.state.transacao.mensagem = response.data.msg
+                        this.carregarLista()
+
+                     })
+                     .catch(errors => {
+
+                        this.$store.state.transacao.status = 'erro'
+                        this.$store.state.transacao.mensagem = errors.response.data.erro
+
+                     })   
+            },
             paginacao(l){
                 if(l.url){
                     this.urlPage = l.url.split('?')[1]

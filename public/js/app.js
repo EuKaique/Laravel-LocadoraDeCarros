@@ -6823,6 +6823,62 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
+    atualizar: function atualizar() {
+      var _this = this;
+
+      var url = this.urlBase + '/' + this.$store.state.item.id;
+      var formData = new FormData();
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Accept': 'Application/json',
+          'Authorization': this.token
+        }
+      };
+      formData.append('_method', 'patch');
+      formData.append('nome', this.$store.state.item.nome);
+
+      if (this.arquivoImagem[0]) {
+        formData.append('imagem', this.arquivoImagem[0]);
+      }
+
+      axios.post(url, formData, config).then(function (response) {
+        console.log('Atualizado com sucesso', response);
+        atualizarImagem.value = '';
+
+        _this.carregarLista();
+      })["catch"](function (errors) {
+        console.log('Erro ao atualizar', errors);
+      });
+    },
+    remover: function remover() {
+      var _this2 = this;
+
+      var confirmacao = confirm('Quer mesmo remover o registro?');
+
+      if (!confirmacao) {
+        return false;
+      }
+
+      var url = this.urlBase + '/' + this.$store.state.item.id;
+      var formData = new FormData();
+      var config = {
+        headers: {
+          'Accept': 'Application/json',
+          'Authorization': this.token
+        }
+      };
+      formData.append('_method', 'delete');
+      axios.post(url, formData, config).then(function (response) {
+        _this2.$store.state.transacao.status = 'sucesso';
+        _this2.$store.state.transacao.mensagem = response.data.msg;
+
+        _this2.carregarLista();
+      })["catch"](function (errors) {
+        _this2.$store.state.transacao.status = 'erro';
+        _this2.$store.state.transacao.mensagem = errors.response.data.erro;
+      });
+    },
     paginacao: function paginacao(l) {
       if (l.url) {
         this.urlPage = l.url.split('?')[1];
@@ -6855,12 +6911,12 @@ __webpack_require__.r(__webpack_exports__);
       document.location.reload(true);
     },
     carregarLista: function carregarLista() {
-      var _this = this;
+      var _this3 = this;
 
       var url = this.urlBase + '?' + this.urlPage + this.urlFiltro;
       axios.get(url).then(function (response) {
-        _this.marcas = response.data;
-        console.log(_this.marcas);
+        _this3.marcas = response.data;
+        console.log(_this3.marcas);
       })["catch"](function (errors) {
         console.log(errors);
       });
@@ -6869,7 +6925,7 @@ __webpack_require__.r(__webpack_exports__);
       this.arquivoImagem = e.target.files;
     },
     salvar: function salvar() {
-      var _this2 = this;
+      var _this4 = this;
 
       var formData = new FormData();
       formData.append('nome', this.nomeMarca);
@@ -6882,14 +6938,14 @@ __webpack_require__.r(__webpack_exports__);
         }
       };
       axios.post(this.urlBase, formData, config).then(function (response) {
-        _this2.transacaoStatus = 'adicionado';
-        _this2.transacaoDetalhes = {
+        _this4.transacaoStatus = 'adicionado';
+        _this4.transacaoDetalhes = {
           mensagem: 'ID da marca:' + response.data.id
         };
         console.log(response);
       })["catch"](function (errors) {
-        _this2.transacaoStatus = 'erro';
-        _this2.transacaoDetalhes = {
+        _this4.transacaoStatus = 'erro';
+        _this4.transacaoDetalhes = {
           mensagem: errors.response.data.message,
           dados: errors.response.data.errors
         };
@@ -7086,6 +7142,8 @@ __webpack_require__.r(__webpack_exports__);
   props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos'],
   methods: {
     getId: function getId(id) {
+      this.$store.state.transacao.status = '';
+      this.$store.state.transacao.mensagem = '';
       this.$store.state.item = id;
     }
   }
@@ -8032,7 +8090,7 @@ var render = function render() {
           attrs: {
             type: "button",
             "data-bs-toggle": "modal",
-            "data-bs-target": "#modalMarcas"
+            "data-bs-target": "#modalAdicionar"
           }
         }, [_vm._v("Adicionar")])])])];
       },
@@ -8040,7 +8098,7 @@ var render = function render() {
     }])
   })], 1)]), _vm._v(" "), _c("modal-component", {
     attrs: {
-      id: "modalMarcas",
+      id: "modalAdicionar",
       titulo: "Adicionar marca"
     },
     scopedSlots: _vm._u([{
@@ -8209,6 +8267,24 @@ var render = function render() {
       titulo: "Remover marca"
     },
     scopedSlots: _vm._u([{
+      key: "alertas",
+      fn: function fn() {
+        return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
+          attrs: {
+            tipo: "success",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Registro removido com sucesso"
+          }
+        }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
+          attrs: {
+            tipo: "danger",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Erro ao remover registro"
+          }
+        }) : _vm._e()];
+      },
+      proxy: true
+    }, _vm.$store.state.transacao.status != "sucesso" ? {
       key: "conteudo",
       fn: function fn() {
         return [_c("inputContainer-component", {
@@ -8240,6 +8316,93 @@ var render = function render() {
         })])];
       },
       proxy: true
+    } : null, {
+      key: "rodape",
+      fn: function fn() {
+        return [_vm.$store.state.transacao.status != "sucesso" ? _c("button", {
+          staticClass: "btn btn-danger",
+          attrs: {
+            type: "button"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.remover();
+            }
+          }
+        }, [_vm._v("Excluir")]) : _vm._e(), _vm._v(" "), _c("button", {
+          staticClass: "btn btn-secondary",
+          attrs: {
+            type: "button",
+            "data-bs-dismiss": "modal"
+          }
+        }, [_vm._v("Fechar")])];
+      },
+      proxy: true
+    }], null, true)
+  }), _vm._v(" "), _c("modal-component", {
+    attrs: {
+      id: "modalEditar",
+      titulo: "Atualizar marca"
+    },
+    scopedSlots: _vm._u([{
+      key: "alertas",
+      fn: function fn() {
+        return undefined;
+      },
+      proxy: true
+    }, {
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "atualizarNome"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.nome,
+            expression: "$store.state.item.nome"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "atualizarNome",
+            placeholder: "Nome da marca"
+          },
+          domProps: {
+            value: _vm.$store.state.item.nome
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "nome", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "atualizarImagem",
+            titulo: "Imagem"
+          }
+        }, [_c("input", {
+          staticClass: "form-control-file mt-2",
+          attrs: {
+            type: "file",
+            id: "atualizarImagem"
+          },
+          on: {
+            change: function change($event) {
+              return _vm.carregarImagem($event);
+            }
+          }
+        })])], 1)];
+      },
+      proxy: true
     }, {
       key: "rodape",
       fn: function fn() {
@@ -8249,7 +8412,17 @@ var render = function render() {
             type: "button",
             "data-bs-dismiss": "modal"
           }
-        }, [_vm._v("Fechar")])];
+        }, [_vm._v("Fechar")]), _vm._v(" "), _c("button", {
+          staticClass: "btn btn-primary",
+          attrs: {
+            type: "button"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.atualizar();
+            }
+          }
+        }, [_vm._v("Atualizar")])];
       },
       proxy: true
     }])
@@ -8861,7 +9034,16 @@ var render = function render() {
         }
       }
     }, [_vm._v("Ver")]), _vm._v(" "), _c("button", {
-      staticClass: "btn btn-primary btn-sm"
+      staticClass: "btn btn-primary btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalEditar"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(m);
+        }
+      }
     }, [_vm._v("Editar")]), _vm._v(" "), _c("button", {
       staticClass: "btn btn-danger btn-sm",
       attrs: {
@@ -8940,7 +9122,11 @@ window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js
 Vue.use(Vuex__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var store = new Vuex__WEBPACK_IMPORTED_MODULE_0__["default"].Store({
   state: {
-    item: {}
+    item: {},
+    transacao: {
+      status: '',
+      mensagem: ''
+    }
   }
 });
 /**
