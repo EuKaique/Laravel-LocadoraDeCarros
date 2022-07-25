@@ -6794,16 +6794,6 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Paginate: _Paginate_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
-  computed: {
-    token: function token() {
-      var token = document.cookie.split(';').find(function (indice) {
-        return indice.includes('token=');
-      });
-      token = token.split('=')[1];
-      token = 'Bearer ' + token;
-      return token;
-    }
-  },
   data: function data() {
     return {
       urlBase: 'http://localhost:8000/api/v1/marca',
@@ -6830,9 +6820,7 @@ __webpack_require__.r(__webpack_exports__);
       var formData = new FormData();
       var config = {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept': 'Application/json',
-          'Authorization': this.token
+          'Content-Type': 'multipart/form-data'
         }
       };
       formData.append('_method', 'patch');
@@ -6843,12 +6831,15 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       axios.post(url, formData, config).then(function (response) {
-        console.log('Atualizado com sucesso', response);
+        _this.$store.state.transacao.status = 'sucesso';
+        _this.$store.state.transacao.mensagem = response.data.msg;
         atualizarImagem.value = '';
 
         _this.carregarLista();
       })["catch"](function (errors) {
-        console.log('Erro ao atualizar', errors);
+        _this.$store.state.transacao.status = 'erro'; //this.$store.state.transacao.mensagem = errors.response.data.errors
+
+        _this.$store.state.transacao.dados = errors.response.data.errors;
       });
     },
     remover: function remover() {
@@ -6862,14 +6853,8 @@ __webpack_require__.r(__webpack_exports__);
 
       var url = this.urlBase + '/' + this.$store.state.item.id;
       var formData = new FormData();
-      var config = {
-        headers: {
-          'Accept': 'Application/json',
-          'Authorization': this.token
-        }
-      };
       formData.append('_method', 'delete');
-      axios.post(url, formData, config).then(function (response) {
+      axios.post(url, formData).then(function (response) {
         _this2.$store.state.transacao.status = 'sucesso';
         _this2.$store.state.transacao.mensagem = response.data.msg;
 
@@ -6932,24 +6917,16 @@ __webpack_require__.r(__webpack_exports__);
       formData.append('imagem', this.arquivoImagem[0]);
       var config = {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Accept': 'application/json',
-          'Authorization': this.token
+          'Content-Type': 'multipart/form-data'
         }
       };
       axios.post(this.urlBase, formData, config).then(function (response) {
-        _this4.transacaoStatus = 'adicionado';
-        _this4.transacaoDetalhes = {
-          mensagem: 'ID da marca:' + response.data.id
-        };
-        console.log(response);
+        _this4.$store.state.transacao.status = 'sucesso';
+        _this4.$store.state.transacao.mensagem = response.data.msg;
+        document.location.reload(true);
       })["catch"](function (errors) {
-        _this4.transacaoStatus = 'erro';
-        _this4.transacaoDetalhes = {
-          mensagem: errors.response.data.message,
-          dados: errors.response.data.errors
-        };
-        console.log(errors);
+        _this4.$store.state.transacao.status = 'erro';
+        _this4.$store.state.transacao.mensagem = errors.data.msg;
       });
     }
   },
@@ -8104,17 +8081,17 @@ var render = function render() {
     scopedSlots: _vm._u([{
       key: "alertas",
       fn: function fn() {
-        return [_vm.transacaoStatus == "adicionado" ? _c("alert-component", {
+        return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
           attrs: {
             tipo: "success",
-            detalhes: _vm.transacaoDetalhes,
-            titulo: "Marca adicionada com sucesso"
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Registro adicionado com sucesso"
           }
-        }) : _vm._e(), _vm._v(" "), _vm.transacaoStatus == "erro" ? _c("alert-component", {
+        }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
           attrs: {
             tipo: "danger",
-            detalhes: _vm.transacaoDetalhes,
-            titulo: "Erro ao adicionar"
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Erro ao adicionar registro"
           }
         }) : _vm._e()];
       },
@@ -8347,7 +8324,19 @@ var render = function render() {
     scopedSlots: _vm._u([{
       key: "alertas",
       fn: function fn() {
-        return undefined;
+        return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
+          attrs: {
+            tipo: "success",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Registro atualizado com sucesso"
+          }
+        }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
+          attrs: {
+            tipo: "danger",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Erro ao atualizar registro"
+          }
+        }) : _vm._e()];
       },
       proxy: true
     }, {
@@ -9022,7 +9011,7 @@ var render = function render() {
         width: "30",
         height: "30"
       }
-    })]), _vm._v(" "), _c("td", [_vm._v(_vm._s(m.created_at.substring(0, 10)))]), _vm._v(" "), _c("td", [_c("button", {
+    })]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formataData")(m.created_at)))]), _vm._v(" "), _c("td", [_c("button", {
       staticClass: "btn btn-success btn-sm",
       attrs: {
         "data-bs-toggle": "modal",
@@ -9120,12 +9109,25 @@ __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 window.Vue = (__webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js")["default"]);
 
 Vue.use(Vuex__WEBPACK_IMPORTED_MODULE_0__["default"]);
+Vue.filter('formataData', function (t) {
+  if (!t) {
+    return '';
+  }
+
+  t = t.split('T');
+  var data = t[0]; //Formatando a data
+
+  data = data.split('-');
+  data = data[2] + '/' + data[1] + '/' + data[0];
+  return data;
+});
 var store = new Vuex__WEBPACK_IMPORTED_MODULE_0__["default"].Store({
   state: {
     item: {},
     transacao: {
       status: '',
-      mensagem: ''
+      mensagem: '',
+      dados: ''
     }
   }
 });
@@ -9197,6 +9199,35 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     forceTLS: true
 // });
+//Interceptar os requests da aplicação
+
+axios.interceptors.request.use(function (config) {
+  config.headers.Accept = 'application/json';
+  var token = document.cookie.split(';').find(function (indice) {
+    return indice.includes('token=');
+  });
+  token = token.split('=')[1];
+  token = 'Bearer ' + token;
+  config.headers.Authorization = token;
+  /*
+  'Accept': 'Application/json',
+  'Authorization': this.token
+  */
+
+  console.log('Interceptando o request da aplicação', config);
+  return config;
+}, function (error) {
+  console.log('Erro ao interceptar request: ', error);
+  return Promise.reject(error);
+}); //Interceptar o response da aplicação
+
+axios.interceptors.response.use(function (response) {
+  console.log('Interceptando o response da aplicação', response);
+  return response;
+}, function (error) {
+  console.log('Erro ao interceptar response: ', error);
+  return Promise.reject(error);
+});
 
 /***/ }),
 

@@ -24,7 +24,7 @@
                 <th scope="row">{{ m.id }}</th>
                 <td>{{ m.nome }}</td>
                 <td><img :src="'/storage/' + m.imagem" width="30" height="30"></td>
-                <td>{{ m.created_at.substring(0, 10) }}</td>
+                <td>{{ m.created_at | formataData }}</td>
                 <td>
                     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(m)">Ver</button>
                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar" @click="getId(m)">Editar</button>

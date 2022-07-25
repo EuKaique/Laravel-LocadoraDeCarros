@@ -12,12 +12,29 @@ import Vuex from 'Vuex';
 
 Vue.use(Vuex);
 
+Vue.filter('formataData', function(t){
+    if(!t){
+        return ''
+    }
+
+    t = t.split('T')
+
+    let data = t[0]
+
+    //Formatando a data
+    data = data.split('-')
+    data = data[2] + '/' + data[1] + '/' + data[0]
+
+    return data
+})
+
 const store = new Vuex.Store({
     state: {
         item: {},
         transacao: {
             status: '',
-            mensagem: ''
+            mensagem: '',
+            dados: ''
         }
     }
 })
