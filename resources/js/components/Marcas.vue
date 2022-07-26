@@ -102,7 +102,7 @@
                     </inputContainer-component>
 
                     <inputContainer-component titulo="Data de cadastro">
-                        <input type="text" class="form-control mb-2" :value="$store.state.item.created_at" disabled>
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.created_at | formataData" disabled>
                     </inputContainer-component>
             </template>
             <template v-slot:rodape>

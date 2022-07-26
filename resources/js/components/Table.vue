@@ -12,11 +12,11 @@
                 <th scope="row">{{ c.id }}</th>
                 <td>{{ c.placa }}</td>
                 <td>{{ c.disponivel == 1 ? 'Sim' : 'Não' }}</td>
-                <td>{{ c.created_at.substring(0, 10) }}</td>
+                <td>{{ c.created_at | formataData }}</td>
                 <td>
-                    <button class="btn btn-success">Ver</button>
-                    <button class="btn btn-primary">Editar</button>
-                    <button class="btn btn-danger">Excluir</button>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(c)">Ver</button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar" @click="getId(c)">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(c)">Excluir</button>
                 </td>
             </tr>
             <!-- Dados de marcas -->
@@ -38,11 +38,11 @@
                 <td><img :src="'/storage/' + d.imagem" width="40" height="30"></td>
                 <td>{{ d.numero_portas }}</td>
                 <td>{{ d.air_bag == 1 ? 'Sim' : 'Não' }}</td>
-                <td>{{ d.created_at.substring(0, 10) }}</td>
+                <td>{{ d.created_at | formataData }}</td>
                 <td>
-                    <button class="btn btn-success">Ver</button>
-                    <button class="btn btn-primary">Editar</button>
-                    <button class="btn btn-danger">Excluir</button>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(d)">Ver</button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar" @click="getId(d)">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(d)">Excluir</button>
                 </td>
             </tr>
         </tbody>

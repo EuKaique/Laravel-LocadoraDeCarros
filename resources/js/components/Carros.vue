@@ -30,6 +30,7 @@
                     </template>
                 </card-component>
                 <!-- FIM DA BUSCA DE MARCAS -->
+
                 <!-- INICIO DA LISTAGEM DE MARCAS -->
                 <card-component titulo="Listagem de carros">
                     <template v-slot:conteudo>
@@ -53,7 +54,7 @@
                                 </paginate-component>
                             </div>
                             <div class="col">
-                                <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalCarros">Adicionar</button>
+                                <button type="button" class="btn btn-primary btn-sm float-right" data-bs-toggle="modal" data-bs-target="#modalAdicionar">Adicionar</button>
                             </div>
                         </div>
                     </template>
@@ -61,11 +62,11 @@
                 <!-- FIM DO CARD DE LISTAGEM DE MARCAS -->
             </div>
         </div>
-        <!-- MODAL -->
-        <modal-component id="modalCarros" titulo="Adicionar carro">
+        <!-- INICIO MODAL DE ADICIONAR CARRO -->
+        <modal-component id="modalAdicionar" titulo="Adicionar carro">
             <template v-slot:alertas>
-                <alert-component tipo="success" v-if="transacaoStatus == 'adicionado'" :detalhes="transacaoDetalhes" titulo="Carro adicionado com sucesso"></alert-component>
-                <alert-component tipo="danger"  v-if="transacaoStatus == 'erro'" :detalhes="transacaoDetalhes" titulo="Erro ao adicionar"></alert-component>
+                <alert-component v-if="$store.state.transacao.status == 'sucesso'" tipo="success" :detalhes="$store.state.transacao" titulo="Registro adicionado com sucesso"></alert-component>
+                <alert-component v-if="$store.state.transacao.status == 'erro'" tipo="danger"  :detalhes="$store.state.transacao" titulo="Erro ao adicionar registro"></alert-component>
             </template>
             <template v-slot:conteudo>
                 <div class="form-group">
@@ -95,6 +96,75 @@
                 <button type="button" class="btn btn-primary" @click="salvar()">Salvar</button>
             </template>
         </modal-component>
+        <!-- FIM MODAL DE ADICIONAR CARRO -->
+
+        <!-- INÍCIO MODAL DE VISUALIZAR CARRO -->
+        <modal-component id="modalVisualizar" titulo="Visualizar carro">
+            <template v-slot:conteudo>
+                    <inputContainer-component titulo="ID">
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.id" disabled>
+                    </inputContainer-component>
+
+                    <inputContainer-component titulo="Carro">
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.placa" disabled>
+                    </inputContainer-component>
+
+                    <inputContainer-component titulo="Data de cadastro">
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.created_at" disabled>
+                    </inputContainer-component>
+            </template>
+            <template v-slot:rodape>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- FIM MODAL DE VISUALIZAR CARRO -->
+
+        <!-- INÍCIO MODAL DE REMOVER CARRO -->
+        <modal-component id="modalRemover" titulo="Remover carro">
+            <template v-slot:alertas>
+                <alert-component v-if="$store.state.transacao.status == 'sucesso'" tipo="success" :detalhes="$store.state.transacao" titulo="Registro removido com sucesso"></alert-component>
+                <alert-component v-if="$store.state.transacao.status == 'erro'" tipo="danger"  :detalhes="$store.state.transacao" titulo="Erro ao remover registro"></alert-component>
+            </template>
+            <template v-slot:conteudo v-if="$store.state.transacao.status != 'sucesso'">
+                    <inputContainer-component titulo="ID">
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.id" disabled>
+                    </inputContainer-component>
+
+                    <inputContainer-component titulo="Carro">
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.placa" disabled>
+                    </inputContainer-component>
+            </template>
+            <template v-slot:rodape>
+                <button type="button" class="btn btn-danger" @click="remover()" v-if="$store.state.transacao.status != 'sucesso'">Excluir</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </template>
+        </modal-component>
+        <!-- FIM MODAL DE REMOVER CARRO -->
+
+        <!-- INÍCIO MODAL DE ATUALIZAR CARRO -->
+        <modal-component id="modalEditar" titulo="Atualizar carro">
+            <template v-slot:alertas>
+                <alert-component v-if="$store.state.transacao.status == 'sucesso'" tipo="success" :detalhes="$store.state.transacao" titulo="Registro atualizado com sucesso"></alert-component>
+                <alert-component v-if="$store.state.transacao.status == 'erro'" tipo="danger"  :detalhes="$store.state.transacao" titulo="Erro ao atualizar registro"></alert-component>
+            </template>
+            <template v-slot:conteudo>
+                <div class="form-group">
+                    <inputContainer-component id="atualizarPlaca">
+                        <input type="text" class="form-control mb-2" id="atualizarPlaca" placeholder="Placa do carro" v-model="$store.state.item.placa">
+                    </inputContainer-component>
+                </div>
+                <div class="form-group">
+                    <inputContainer-component id="AtualizaDisponibilidade">
+                        <input type="number" min="0" max="1" class="form-control" id="AtualizaDisponibilidade" placeholder="0 é não, 1 é sim" v-model="$store.state.item.disponivel">
+                    </inputContainer-component>
+                </div>
+            </template>
+            <template v-slot:rodape>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" @click="atualizar()">Atualizar</button>
+            </template>
+        </modal-component>
+        <!-- FIM MODAL DE ATUALIZAR CARRO -->
     </div>
 </template>
 
@@ -103,18 +173,6 @@
 
     export default{
         components: { Paginate },
-        computed: {
-            token(){
-                let token = document.cookie.split(';').find(indice => {
-                    return indice.includes('token=')
-                })
-
-                token = token.split('=')[1]
-                token = 'Bearer ' + token
-                
-                return token
-            }   
-        },
         data(){
             return {
                 urlBase: 'http://localhost:8000/api/v1/carro',
@@ -134,9 +192,65 @@
             }
         },
         methods: {
+            atualizar(){
+                let url = this.urlBase + '/' + this.$store.state.item.id
+                let formData = new FormData()
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+
+                formData.append('_method', 'patch')
+                formData.append('placa', this.$store.state.item.placa)
+                formData.append('disponivel', this.$store.state.item.disponivel)
+
+                axios.post(url,formData,config)
+                     .then(response => {
+
+                        this.$store.state.transacao.status = 'sucesso'
+                        this.$store.state.transacao.mensagem = response.data.msg
+                        this.carregarLista()
+
+                     })
+                     .catch(errors => {
+
+                        this.$store.state.transacao.status = 'erro'
+                        //this.$store.state.transacao.mensagem = errors.response.data.errors
+                        this.$store.state.transacao.dados = errors.response.data.errors
+
+                     })  
+            },
+            remover(){
+                let confirmacao = confirm('Quer mesmo remover o registro?')
+
+                if(!confirmacao){
+                    return false
+                }
+
+                let url = this.urlBase + '/' + this.$store.state.item.id
+                let formData = new FormData()
+
+                formData.append('_method', 'delete')
+
+                axios.post(url,formData)
+                     .then(response => {
+
+                        this.$store.state.transacao.status = 'sucesso'
+                        this.$store.state.transacao.mensagem = response.data.msg
+                        document.location.reload(true)
+
+                     })
+                     .catch(errors => {
+
+                        this.$store.state.transacao.status = 'erro'
+                        this.$store.state.transacao.mensagem = errors.response.data.erro
+
+                     })   
+            },
             paginacao(l){
                 if(l.url){
-                    this.urlBase = l.url
+                    this.urlPage = l.url.split('?')[1]
                     this.carregarLista()
                 }
             },
@@ -186,9 +300,7 @@
 
                 let config = {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'Accept': 'application/json',
-                        'Authorization': this.token
+                        'Content-Type': 'multipart/form-data'
                     }
                 }
 
@@ -198,18 +310,14 @@
                     config
                 )
                 .then(response => {
-                    this.transacaoStatus = 'adicionado'
-                    this.transacaoDetalhes = {
-                        mensagem: 'ID do carro:' + response.data.id
-                    }
+                    this.$store.state.transacao.status = 'sucesso'
+                    this.$store.state.transacao.mensagem = response.data.msg
                     document.location.reload(true)
+                    
                 })
                 .catch(errors => {
-                    this.transacaoStatus = 'erro'
-                    this.transacaoDetalhes = {
-                        mensagem: errors.response.data.message,
-                        dados: errors.response.data.errors
-                    }
+                    this.$store.state.transacao.status = 'erro'
+                    this.$store.state.transacao.mensagem = errors.data.msg
                     
                 })
             }

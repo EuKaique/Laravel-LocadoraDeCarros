@@ -120,28 +120,19 @@ class ModeloController extends Controller
         $request->validate($modelo->rules()/*, $modelo->feedback()*/);
 
         }
+
+        //Preencher o objeto modelo com os dados do request
+        $modelo->fill($request->all());
+
         //Remove uma imagem antiga e mantém a atual
         if($request->file('imagem')){
             Storage::disk('public')->delete($modelo->imagem);
+
+            $imagem = $request->file('imagem');
+            $imagem_path = $imagem->store('imagens/modelo','public');
+            $modelo->imagem = $imagem_path;
         }
 
-        $imagem = $request->file('imagem');
-        $imagem_path = $imagem->store('imagens/modelo','public');
-        /*
-        $modelo->update([
-            'marca_id'      => $request->marca_id,
-            'nome'          => $request->nome,
-            'imagem'        => $imagem_path,
-            'numero_portas' => $request->numero_portas,
-            'lugares'       => $request->lugares,
-            'air_bag'       => $request->air_bag,
-            'abs'           => $request->abs
-        ]);
-        */
-
-        //Preencher o objeto marca com os dados do request
-        $modelo->fill($request->all());
-        $modelo->imagem = $imagem_path;
         $modelo->save();
 
         return response()->json($modelo, 200);
