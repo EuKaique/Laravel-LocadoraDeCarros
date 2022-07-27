@@ -62,6 +62,8 @@ Vue.component('alert-component', require('./components/Alert.vue').default);
 Vue.component('paginate-component', require('./components/Paginate.vue').default);
 Vue.component('carros-component', require('./components/Carros.vue').default);
 Vue.component('modelos-component', require('./components/Modelos.vue').default);
+Vue.component('clientes-component', require('./components/Clientes.vue').default);
+Vue.component('locacoes-component', require('./components/Locacoes.vue').default);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
