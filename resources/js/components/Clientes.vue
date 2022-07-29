@@ -9,7 +9,7 @@
                         <div class="row">
                             <div class="col mb-3">
                                 <inputContainer-component id="inputCPF" titulo="CPF" help-id="helpID" texto-ajuda="Informe o CPF (Opcional).">
-                                    <input type="number" class="form-control" id="inputCPF" aria-describedby="helpCPF" placeholder="CPF do cliente" v-model="buscar.cpf">
+                                    <input type="text" class="form-control" id="inputCPF" aria-describedby="helpCPF" placeholder="CPF do cliente" v-model="buscar.cpf">
                                 </inputContainer-component>
                             </div>
                             <div class="col mb-3">
@@ -65,29 +65,20 @@
                 <!-- INICIO MODAL DE ADICIONAR CLIENTE -->
                 <modal-component id="modalAdicionar" titulo="Adicionar cliente">
                     <template v-slot:alertas>
-                        <alert-component v-if="$store.state.transacao.status == 'sucesso'" tipo="success" :detalhes="$store.state.transacao" titulo="Registro adicionado com sucesso"></alert-component>
-                        <alert-component v-if="$store.state.transacao.status == 'erro'" tipo="danger"  :detalhes="$store.state.transacao" titulo="Erro ao adicionar registro"></alert-component>
+                        <alert-component v-if="$store.state.transacao.status == 'sucesso'" tipo="success" :detalhes="$store.state.transacao.mensagem" titulo="Registro adicionado com sucesso"></alert-component>
+                        <alert-component v-if="$store.state.transacao.status == 'erro'" tipo="danger"  :detalhes="$store.state.transacao.mensagem" titulo="Erro ao adicionar registro"></alert-component>
                     </template>
                     <template v-slot:conteudo>
                         <div class="form-group">
-                            <inputContainer-component id="placa" titulo="placa">
-                                <label for="placa" class="form-label">Placa</label>
-                                <input type="text" class="form-control mb-2" id="placa" placeholder="Placa do cliente" v-model="placa">
+                            <inputContainer-component id="nome">
+                                <label for="nome" class="form-label">Nome</label>
+                                <input type="text" class="form-control mb-2" id="nome" placeholder="Nome do cliente" v-model="nomeCliente">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="modelo_id" titulo="Modelo ID">
-                                <input type="number" min="1" class="form-control mb-2" id="modelo_id" placeholder="Modelo do cliente" v-model="modelo_id">
-                            </inputContainer-component>
-                        </div>
-                        <div class="form-group">
-                            <inputContainer-component id="disponivel" titulo="disponivel">
-                                <input type="number" min="0" max="1" class="form-control" id="disponivel" placeholder="0 é não, 1 é sim" v-model="disponivel">
-                            </inputContainer-component>
-                        </div>
-                        <div class="form-group">
-                            <inputContainer-component id="km" titulo="quilometro">
-                                <input type="number" min="0" class="form-control mb-2" id="km" placeholder="Km/h" v-model="km">
+                            <inputContainer-component id="cpf">
+                                <label for="cpf" class="form-label">CPF</label>
+                                <input type="text" class="form-control mb-2" id="cpf" placeholder="CPF do cliente" v-model="cpfCliente">
                             </inputContainer-component>
                         </div>
                     </template>
@@ -105,12 +96,16 @@
                                 <input type="text" class="form-control mb-2" :value="$store.state.item.id" disabled>
                             </inputContainer-component>
 
-                            <inputContainer-component titulo="Carro">
-                                <input type="text" class="form-control mb-2" :value="$store.state.item.placa" disabled>
+                            <inputContainer-component titulo="Cliente">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.nome" disabled>
+                            </inputContainer-component>
+
+                            <inputContainer-component titulo="CPF">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.cpf" disabled>
                             </inputContainer-component>
 
                             <inputContainer-component titulo="Data de cadastro">
-                                <input type="text" class="form-control mb-2" :value="$store.state.item.created_at" disabled>
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.created_at | formataData" disabled>
                             </inputContainer-component>
                     </template>
                     <template v-slot:rodape>
@@ -130,8 +125,12 @@
                                 <input type="text" class="form-control mb-2" :value="$store.state.item.id" disabled>
                             </inputContainer-component>
 
-                            <inputContainer-component titulo="Carro">
-                                <input type="text" class="form-control mb-2" :value="$store.state.item.placa" disabled>
+                            <inputContainer-component titulo="Nome">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.nome" disabled>
+                            </inputContainer-component>
+
+                            <inputContainer-component titulo="CPF">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.cpf" disabled>
                             </inputContainer-component>
                     </template>
                     <template v-slot:rodape>
@@ -149,13 +148,13 @@
                     </template>
                     <template v-slot:conteudo>
                         <div class="form-group">
-                            <inputContainer-component id="atualizarPlaca">
-                                <input type="text" class="form-control mb-2" id="atualizarPlaca" placeholder="Placa do cliente" v-model="$store.state.item.placa">
+                            <inputContainer-component id="atualizarNome">
+                                <input type="text" class="form-control mb-2" id="atualizarNome" placeholder="Nome do cliente" v-model="$store.state.item.nome">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="AtualizaDisponibilidade">
-                                <input type="number" min="0" max="1" class="form-control" id="AtualizaDisponibilidade" placeholder="0 é não, 1 é sim" v-model="$store.state.item.disponivel">
+                            <inputContainer-component id="atualizarCpf">
+                                <input type="text" class="form-control mb-2" id="atualizarCpf" placeholder="Cpf do cliente" v-model="$store.state.item.cpf">
                             </inputContainer-component>
                         </div>
                     </template>
@@ -172,9 +171,157 @@
 </template>
 
 <script>
-    export default {
-        mounted() {
-            console.log('Component mounted.')
+    import Paginate from './Paginate.vue'
+
+    export default{
+        components: { Paginate },
+        data(){
+            return {
+                urlBase: 'http://localhost:8000/api/v1/cliente',
+                urlPage: '',
+                urlFiltro: '',
+                transacaoStatus: '',
+                nomeCliente: '',
+                cpfCliente: '',
+                transacaoDetalhes: [],
+                clientes: { data:[] },
+                buscar: {
+                    nome: '',
+                    cpf: ''
+                }
+            }
+        },
+        methods: {
+            atualizar(){
+                let url = this.urlBase + '/' + this.$store.state.item.id
+                let formData = new FormData()
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+
+                formData.append('_method', 'patch')
+                formData.append('nome', this.$store.state.item.nome)
+                formData.append('cpf', this.$store.state.item.cpf)
+
+                axios.post(url,formData,config)
+                     .then(response => {
+
+                        this.$store.state.transacao.status = 'sucesso'
+                        this.$store.state.transacao.mensagem = response.data.msg
+                        this.carregarLista()
+
+                     })
+                     .catch(errors => {
+
+                        this.$store.state.transacao.status = 'erro'
+                        //this.$store.state.transacao.mensagem = errors.response.data.errors
+                        this.$store.state.transacao.dados = errors.response.data.errors
+
+                     })  
+            },
+            remover(){
+                let confirmacao = confirm('Quer mesmo remover o registro?')
+
+                if(!confirmacao){
+                    return false
+                }
+
+                let url = this.urlBase + '/' + this.$store.state.item.id
+                let formData = new FormData()
+
+                formData.append('_method', 'delete')
+
+                axios.post(url,formData)
+                     .then(response => {
+
+                        this.$store.state.transacao.status = 'sucesso'
+                        this.$store.state.transacao.mensagem = response.data.msg
+                        this.carregarLista()
+
+                     })
+                     .catch(errors => {
+
+                        this.$store.state.transacao.status = 'erro'
+                        this.$store.state.transacao.mensagem = errors.response.data.erro
+
+                     })   
+            },
+            paginacao(l){
+                if(l.url){
+                    this.urlPage = l.url.split('?')[1]
+                    this.carregarLista()
+                }
+            },
+            pesquisar(){
+                let filtro = ''
+
+                for(let chave in this.buscar){
+                    if(this.buscar[chave]){
+                        if(filtro != ''){
+                            filtro += ';'
+                        }
+                        filtro += chave + ':like:' + this.buscar[chave]
+                    }
+                }
+
+                if(filtro != ''){
+                    this.urlPage = 'page=1'
+                    this.urlFiltro = '&filtro=' + filtro
+                }else{
+                    this.urlFiltro = ''
+                }
+
+                this.carregarLista()
+            },
+            limpar(){
+                document.location.reload(true)
+            },
+            carregarLista(){
+                let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
+
+                axios.get(url)
+                .then(response => {
+                    this.clientes = response.data
+                    console.log(this.clientes)
+                })
+                .catch(errors => {
+                    console.log(errors)
+                })
+            },
+            salvar(){
+                let formData = new FormData()
+
+                formData.append('nome', this.nomeCliente)
+                formData.append('cpf', this.cpfCliente)
+
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+
+                axios.post(
+                    this.urlBase,
+                    formData,
+                    config
+                )
+                .then(response => {
+                    this.$store.state.transacao.status = 'sucesso'
+                    this.$store.state.transacao.mensagem = response.data.msg
+                    document.location.reload(true)
+                    
+                })
+                .catch(errors => {
+                    this.$store.state.transacao.status = 'erro'
+                    this.$store.state.transacao.mensagem = errors.data.message
+                    console.log(errors.data.message)
+                })
+            }
+        },
+        mounted(){
+            this.carregarLista()
         }
     }
 </script>

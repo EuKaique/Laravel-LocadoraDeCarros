@@ -45,13 +45,31 @@
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(d)">Excluir</button>
                 </td>
             </tr>
+            <!-- Dados de clientes -->
+            <tr v-for="ct in dadosClientes" :key="ct.id">
+                <th scope="row">{{ ct.id }}</th>
+                <td>{{ ct.nome }}</td>
+                <td>{{ ct.cpf }}</td>
+                <td>{{ ct.created_at | formataData }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(ct)">Ver</button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar" @click="getId(ct)">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(ct)">Excluir</button>
+                </td>
+            </tr>
         </tbody>
     </table>
 </template>
 
 <script>
     export default {
-        props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos'],
+        props: [
+            'dadosCarros', 
+            'dadosMarcas', 
+            'dadosModelos', 
+            'dadosClientes',
+            'titulos'
+        ],
         methods: {
             getId(id){
                 this.$store.state.transacao.status = ''

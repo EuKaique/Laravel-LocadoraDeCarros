@@ -6726,9 +6726,143 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _Paginate_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Paginate.vue */ "./resources/js/components/Paginate.vue");
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  components: {
+    Paginate: _Paginate_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  data: function data() {
+    return {
+      urlBase: 'http://localhost:8000/api/v1/cliente',
+      urlPage: '',
+      urlFiltro: '',
+      transacaoStatus: '',
+      nomeCliente: '',
+      cpfCliente: '',
+      transacaoDetalhes: [],
+      clientes: {
+        data: []
+      },
+      buscar: {
+        nome: '',
+        cpf: ''
+      }
+    };
+  },
+  methods: {
+    atualizar: function atualizar() {
+      var _this = this;
+
+      var url = this.urlBase + '/' + this.$store.state.item.id;
+      var formData = new FormData();
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      formData.append('_method', 'patch');
+      formData.append('nome', this.$store.state.item.nome);
+      formData.append('cpf', this.$store.state.item.cpf);
+      axios.post(url, formData, config).then(function (response) {
+        _this.$store.state.transacao.status = 'sucesso';
+        _this.$store.state.transacao.mensagem = response.data.msg;
+
+        _this.carregarLista();
+      })["catch"](function (errors) {
+        _this.$store.state.transacao.status = 'erro'; //this.$store.state.transacao.mensagem = errors.response.data.errors
+
+        _this.$store.state.transacao.dados = errors.response.data.errors;
+      });
+    },
+    remover: function remover() {
+      var _this2 = this;
+
+      var confirmacao = confirm('Quer mesmo remover o registro?');
+
+      if (!confirmacao) {
+        return false;
+      }
+
+      var url = this.urlBase + '/' + this.$store.state.item.id;
+      var formData = new FormData();
+      formData.append('_method', 'delete');
+      axios.post(url, formData).then(function (response) {
+        _this2.$store.state.transacao.status = 'sucesso';
+        _this2.$store.state.transacao.mensagem = response.data.msg;
+
+        _this2.carregarLista();
+      })["catch"](function (errors) {
+        _this2.$store.state.transacao.status = 'erro';
+        _this2.$store.state.transacao.mensagem = errors.response.data.erro;
+      });
+    },
+    paginacao: function paginacao(l) {
+      if (l.url) {
+        this.urlPage = l.url.split('?')[1];
+        this.carregarLista();
+      }
+    },
+    pesquisar: function pesquisar() {
+      var filtro = '';
+
+      for (var chave in this.buscar) {
+        if (this.buscar[chave]) {
+          if (filtro != '') {
+            filtro += ';';
+          }
+
+          filtro += chave + ':like:' + this.buscar[chave];
+        }
+      }
+
+      if (filtro != '') {
+        this.urlPage = 'page=1';
+        this.urlFiltro = '&filtro=' + filtro;
+      } else {
+        this.urlFiltro = '';
+      }
+
+      this.carregarLista();
+    },
+    limpar: function limpar() {
+      document.location.reload(true);
+    },
+    carregarLista: function carregarLista() {
+      var _this3 = this;
+
+      var url = this.urlBase + '?' + this.urlPage + this.urlFiltro;
+      axios.get(url).then(function (response) {
+        _this3.clientes = response.data;
+        console.log(_this3.clientes);
+      })["catch"](function (errors) {
+        console.log(errors);
+      });
+    },
+    salvar: function salvar() {
+      var _this4 = this;
+
+      var formData = new FormData();
+      formData.append('nome', this.nomeCliente);
+      formData.append('cpf', this.cpfCliente);
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      axios.post(this.urlBase, formData, config).then(function (response) {
+        _this4.$store.state.transacao.status = 'sucesso';
+        _this4.$store.state.transacao.mensagem = response.data.msg;
+        document.location.reload(true);
+      })["catch"](function (errors) {
+        _this4.$store.state.transacao.status = 'erro';
+        _this4.$store.state.transacao.mensagem = errors.data.message;
+        console.log(errors.data.message);
+      });
+    }
+  },
   mounted: function mounted() {
-    console.log('Component mounted.');
+    this.carregarLista();
   }
 });
 
@@ -7219,7 +7353,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'titulos'],
+  props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'dadosClientes', 'titulos'],
   methods: {
     getId: function getId(id) {
       this.$store.state.transacao.status = '';
@@ -7993,7 +8127,7 @@ var render = function render() {
           }],
           staticClass: "form-control",
           attrs: {
-            type: "number",
+            type: "text",
             id: "inputCPF",
             "aria-describedby": "helpCPF",
             placeholder: "CPF do cliente"
@@ -8155,13 +8289,13 @@ var render = function render() {
         return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
           attrs: {
             tipo: "success",
-            detalhes: _vm.$store.state.transacao,
+            detalhes: _vm.$store.state.transacao.mensagem,
             titulo: "Registro adicionado com sucesso"
           }
         }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
           attrs: {
             tipo: "danger",
-            detalhes: _vm.$store.state.transacao,
+            detalhes: _vm.$store.state.transacao.mensagem,
             titulo: "Erro ao adicionar registro"
           }
         }) : _vm._e()];
@@ -8174,125 +8308,66 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "placa",
-            titulo: "placa"
+            id: "nome"
           }
         }, [_c("label", {
           staticClass: "form-label",
           attrs: {
-            "for": "placa"
+            "for": "nome"
           }
-        }, [_vm._v("Placa")]), _vm._v(" "), _c("input", {
+        }, [_vm._v("Nome")]), _vm._v(" "), _c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
-            value: _vm.placa,
-            expression: "placa"
+            value: _vm.nomeCliente,
+            expression: "nomeCliente"
           }],
           staticClass: "form-control mb-2",
           attrs: {
             type: "text",
-            id: "placa",
-            placeholder: "Placa do cliente"
+            id: "nome",
+            placeholder: "Nome do cliente"
           },
           domProps: {
-            value: _vm.placa
+            value: _vm.nomeCliente
           },
           on: {
             input: function input($event) {
               if ($event.target.composing) return;
-              _vm.placa = $event.target.value;
+              _vm.nomeCliente = $event.target.value;
             }
           }
         })])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "modelo_id",
-            titulo: "Modelo ID"
+            id: "cpf"
           }
-        }, [_c("input", {
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "cpf"
+          }
+        }, [_vm._v("CPF")]), _vm._v(" "), _c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
-            value: _vm.modelo_id,
-            expression: "modelo_id"
+            value: _vm.cpfCliente,
+            expression: "cpfCliente"
           }],
           staticClass: "form-control mb-2",
           attrs: {
-            type: "number",
-            min: "1",
-            id: "modelo_id",
-            placeholder: "Modelo do cliente"
+            type: "text",
+            id: "cpf",
+            placeholder: "CPF do cliente"
           },
           domProps: {
-            value: _vm.modelo_id
+            value: _vm.cpfCliente
           },
           on: {
             input: function input($event) {
               if ($event.target.composing) return;
-              _vm.modelo_id = $event.target.value;
-            }
-          }
-        })])], 1), _vm._v(" "), _c("div", {
-          staticClass: "form-group"
-        }, [_c("inputContainer-component", {
-          attrs: {
-            id: "disponivel",
-            titulo: "disponivel"
-          }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.disponivel,
-            expression: "disponivel"
-          }],
-          staticClass: "form-control",
-          attrs: {
-            type: "number",
-            min: "0",
-            max: "1",
-            id: "disponivel",
-            placeholder: "0 é não, 1 é sim"
-          },
-          domProps: {
-            value: _vm.disponivel
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.disponivel = $event.target.value;
-            }
-          }
-        })])], 1), _vm._v(" "), _c("div", {
-          staticClass: "form-group"
-        }, [_c("inputContainer-component", {
-          attrs: {
-            id: "km",
-            titulo: "quilometro"
-          }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.km,
-            expression: "km"
-          }],
-          staticClass: "form-control mb-2",
-          attrs: {
-            type: "number",
-            min: "0",
-            id: "km",
-            placeholder: "Km/h"
-          },
-          domProps: {
-            value: _vm.km
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.km = $event.target.value;
+              _vm.cpfCliente = $event.target.value;
             }
           }
         })])], 1)];
@@ -8344,7 +8419,7 @@ var render = function render() {
           }
         })]), _vm._v(" "), _c("inputContainer-component", {
           attrs: {
-            titulo: "Carro"
+            titulo: "Cliente"
           }
         }, [_c("input", {
           staticClass: "form-control mb-2",
@@ -8353,7 +8428,20 @@ var render = function render() {
             disabled: ""
           },
           domProps: {
-            value: _vm.$store.state.item.placa
+            value: _vm.$store.state.item.nome
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "CPF"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.cpf
           }
         })]), _vm._v(" "), _c("inputContainer-component", {
           attrs: {
@@ -8366,7 +8454,7 @@ var render = function render() {
             disabled: ""
           },
           domProps: {
-            value: _vm.$store.state.item.created_at
+            value: _vm._f("formataData")(_vm.$store.state.item.created_at)
           }
         })])];
       },
@@ -8425,7 +8513,7 @@ var render = function render() {
           }
         })]), _vm._v(" "), _c("inputContainer-component", {
           attrs: {
-            titulo: "Carro"
+            titulo: "Nome"
           }
         }, [_c("input", {
           staticClass: "form-control mb-2",
@@ -8434,7 +8522,20 @@ var render = function render() {
             disabled: ""
           },
           domProps: {
-            value: _vm.$store.state.item.placa
+            value: _vm.$store.state.item.nome
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "CPF"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.cpf
           }
         })])];
       },
@@ -8492,60 +8593,58 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "atualizarPlaca"
+            id: "atualizarNome"
           }
         }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
-            value: _vm.$store.state.item.placa,
-            expression: "$store.state.item.placa"
+            value: _vm.$store.state.item.nome,
+            expression: "$store.state.item.nome"
           }],
           staticClass: "form-control mb-2",
           attrs: {
             type: "text",
-            id: "atualizarPlaca",
-            placeholder: "Placa do cliente"
+            id: "atualizarNome",
+            placeholder: "Nome do cliente"
           },
           domProps: {
-            value: _vm.$store.state.item.placa
+            value: _vm.$store.state.item.nome
           },
           on: {
             input: function input($event) {
               if ($event.target.composing) return;
 
-              _vm.$set(_vm.$store.state.item, "placa", $event.target.value);
+              _vm.$set(_vm.$store.state.item, "nome", $event.target.value);
             }
           }
         })])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "AtualizaDisponibilidade"
+            id: "atualizarCpf"
           }
         }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
-            value: _vm.$store.state.item.disponivel,
-            expression: "$store.state.item.disponivel"
+            value: _vm.$store.state.item.cpf,
+            expression: "$store.state.item.cpf"
           }],
-          staticClass: "form-control",
+          staticClass: "form-control mb-2",
           attrs: {
-            type: "number",
-            min: "0",
-            max: "1",
-            id: "AtualizaDisponibilidade",
-            placeholder: "0 é não, 1 é sim"
+            type: "text",
+            id: "atualizarCpf",
+            placeholder: "Cpf do cliente"
           },
           domProps: {
-            value: _vm.$store.state.item.disponivel
+            value: _vm.$store.state.item.cpf
           },
           on: {
             input: function input($event) {
               if ($event.target.composing) return;
 
-              _vm.$set(_vm.$store.state.item, "disponivel", $event.target.value);
+              _vm.$set(_vm.$store.state.item, "cpf", $event.target.value);
             }
           }
         })])], 1)];
@@ -10572,6 +10671,47 @@ var render = function render() {
         }
       }
     }, [_vm._v("Excluir")])])]);
+  }), _vm._v(" "), _vm._l(_vm.dadosClientes, function (ct) {
+    return _c("tr", {
+      key: ct.id
+    }, [_c("th", {
+      attrs: {
+        scope: "row"
+      }
+    }, [_vm._v(_vm._s(ct.id))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(ct.nome))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(ct.cpf))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formataData")(ct.created_at)))]), _vm._v(" "), _c("td", [_c("button", {
+      staticClass: "btn btn-success btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalVisualizar"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(ct);
+        }
+      }
+    }, [_vm._v("Ver")]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-primary btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalEditar"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(ct);
+        }
+      }
+    }, [_vm._v("Editar")]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-danger btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalRemover"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(ct);
+        }
+      }
+    }, [_vm._v("Excluir")])])]);
   })], 2)]);
 };
 
@@ -10695,7 +10835,7 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //Interceptar os requests da aplicação
 
 axios.interceptors.request.use(function (config) {
-  config.headers.Accept = 'application/json';
+  config.headers.Accept = 'Application/json';
   var token = document.cookie.split(';').find(function (indice) {
     return indice.includes('token=');
   });

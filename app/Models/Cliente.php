@@ -10,12 +10,13 @@ class Cliente extends Model
     use HasFactory;
 
     protected $table = 'clientes';
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome', 'cpf'];
 
     public function rules()
     {
         return [
-            'nome'  => 'required|min:3'
+            'nome'  => 'required|min:3',
+            'cpf'   => 'required|min:14|max:14'
         ];
     }
 }

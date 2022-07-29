@@ -29,7 +29,7 @@ class ClienteController extends Controller
             $clienteRepository->selectAtributos($request->atributos);
         }
 
-        return response()->json($clienteRepository->getResultado(), 200);
+        return response()->json($clienteRepository->getResultadoPaginado(5), 200);
     }
 
     /**
@@ -47,7 +47,8 @@ class ClienteController extends Controller
 
 
         $cliente = $this->cliente->create([
-            'nome' => $request->nome
+            'nome' => $request->nome,
+            'cpf' => $request->cpf
         ]);
 
         return response()->json($cliente, 201);
