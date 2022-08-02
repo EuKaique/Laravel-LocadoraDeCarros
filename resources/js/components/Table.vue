@@ -57,6 +57,19 @@
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(ct)">Excluir</button>
                 </td>
             </tr>
+            <!-- Dados de locações -->
+            <tr v-for="lc in dadosLocacoes" :key="lc.id">
+                <th scope="row">{{ lc.id }}</th>
+                <td>{{ lc.valor_diaria | replaceValor }}</td>
+                <td>{{ lc.km_inicial }}km</td>
+                <td>{{ lc.km_final }}km</td>
+                <td>{{ lc.created_at | formataData }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(lc)">Ver</button>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalEditar" @click="getId(lc)">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modalRemover" @click="getId(lc)">Excluir</button>
+                </td>
+            </tr>
         </tbody>
     </table>
 </template>
@@ -68,6 +81,7 @@
             'dadosMarcas', 
             'dadosModelos', 
             'dadosClientes',
+            'dadosLocacoes',
             'titulos'
         ],
         methods: {

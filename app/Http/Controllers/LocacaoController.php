@@ -28,7 +28,7 @@ class LocacaoController extends Controller
             $locacaoRepository->selectAtributos($request->atributos);
         }
 
-        return response()->json($locacaoRepository->getResultado(), 200);
+        return response()->json($locacaoRepository->getResultadoPaginado(5), 200);
     }
 
     /**
@@ -111,7 +111,7 @@ class LocacaoController extends Controller
 
         }
 
-        //Preencher o objeto marca com os dados do request
+        //Preencher o objeto locação com os dados do request
         $locacao->fill($request->all());
         $locacao->save();
 

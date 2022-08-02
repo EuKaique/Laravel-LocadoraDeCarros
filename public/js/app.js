@@ -6925,9 +6925,161 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _Paginate_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Paginate.vue */ "./resources/js/components/Paginate.vue");
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  components: {
+    Paginate: _Paginate_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+  },
+  data: function data() {
+    return {
+      urlBase: 'http://localhost:8000/api/v1/locacao',
+      urlPage: '',
+      urlFiltro: '',
+      transacaoStatus: '',
+      Cliente_id: '',
+      Carro_id: '',
+      dataInicioPeriodo: '',
+      dataFinalPrevistoPeriodo: '',
+      dataFinalRealizadoPeriodo: '',
+      valorDiaria: '',
+      kmInicial: '',
+      kmFinal: '',
+      transacaoDetalhes: [],
+      locacoes: {
+        data: []
+      },
+      buscar: {
+        id: '',
+        data_inicio_periodo: ''
+      }
+    };
+  },
+  methods: {
+    atualizar: function atualizar() {
+      var _this = this;
+
+      var url = this.urlBase + '/' + this.$store.state.item.id;
+      var formData = new FormData();
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      formData.append('_method', 'patch');
+      formData.append('cliente_id', this.$store.state.item.cliente_id);
+      formData.append('carro_id', this.$store.state.item.carro_id);
+      formData.append('data_inicio_periodo', this.$store.state.item.data_inicio_periodo);
+      formData.append('data_final_previsto_periodo', this.$store.state.item.data_final_previsto_periodo);
+      formData.append('data_final_realizado_periodo', this.$store.state.item.data_final_realizado_periodo);
+      formData.append('valor_diaria', this.$store.state.item.valor_diaria);
+      formData.append('km_inicial', this.$store.state.item.km_inicial);
+      formData.append('km_final', this.$store.state.item.km_final);
+      axios.post(url, formData, config).then(function (response) {
+        _this.$store.state.transacao.status = 'sucesso';
+        _this.$store.state.transacao.mensagem = response.data.msg;
+
+        _this.carregarLista();
+      })["catch"](function (errors) {
+        _this.$store.state.transacao.status = 'erro'; //this.$store.state.transacao.mensagem = errors.response.data.errors
+
+        _this.$store.state.transacao.dados = errors.response.data.errors;
+      });
+    },
+    remover: function remover() {
+      var _this2 = this;
+
+      var confirmacao = confirm('Quer mesmo remover o registro?');
+
+      if (!confirmacao) {
+        return false;
+      }
+
+      var url = this.urlBase + '/' + this.$store.state.item.id;
+      var formData = new FormData();
+      formData.append('_method', 'delete');
+      axios.post(url, formData).then(function (response) {
+        _this2.$store.state.transacao.status = 'sucesso';
+        _this2.$store.state.transacao.mensagem = response.data.msg;
+
+        _this2.carregarLista();
+      })["catch"](function (errors) {
+        _this2.$store.state.transacao.status = 'erro';
+        _this2.$store.state.transacao.mensagem = errors.response.data.erro;
+      });
+    },
+    paginacao: function paginacao(l) {
+      if (l.url) {
+        this.urlPage = l.url.split('?')[1];
+        this.carregarLista();
+      }
+    },
+    pesquisar: function pesquisar() {
+      var filtro = '';
+
+      for (var chave in this.buscar) {
+        if (this.buscar[chave]) {
+          if (filtro != '') {
+            filtro += ';';
+          }
+
+          filtro += chave + ':like:' + this.buscar[chave];
+        }
+      }
+
+      if (filtro != '') {
+        this.urlPage = 'page=1';
+        this.urlFiltro = '&filtro=' + filtro;
+      } else {
+        this.urlFiltro = '';
+      }
+
+      this.carregarLista();
+    },
+    limpar: function limpar() {
+      document.location.reload(true);
+    },
+    carregarLista: function carregarLista() {
+      var _this3 = this;
+
+      var url = this.urlBase + '?' + this.urlPage + this.urlFiltro;
+      axios.get(url).then(function (response) {
+        _this3.locacoes = response.data;
+        console.log(_this3.locacoes);
+      })["catch"](function (errors) {
+        console.log(errors);
+      });
+    },
+    salvar: function salvar() {
+      var _this4 = this;
+
+      var formData = new FormData();
+      formData.append('cliente_id', this.Cliente_id);
+      formData.append('carro_id', this.Carro_id);
+      formData.append('data_inicio_periodo', this.dataInicioPeriodo);
+      formData.append('data_final_previsto_periodo', this.dataFinalPrevistoPeriodo);
+      formData.append('data_final_realizado_periodo', this.dataFinalRealizadoPeriodo);
+      formData.append('valor_diaria', this.valorDiaria);
+      formData.append('km_inicial', this.kmInicial);
+      formData.append('km_final', this.kmFinal);
+      var config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      };
+      axios.post(this.urlBase, formData, config).then(function (response) {
+        _this4.$store.state.transacao.status = 'sucesso';
+        _this4.$store.state.transacao.mensagem = response.data.msg;
+        document.location.reload(true);
+      })["catch"](function (errors) {
+        _this4.$store.state.transacao.status = 'erro';
+        _this4.$store.state.transacao.mensagem = errors.data.message;
+        console.log(errors.data.message);
+      });
+    }
+  },
   mounted: function mounted() {
-    console.log('Component mounted.');
+    this.carregarLista();
   }
 });
 
@@ -7353,7 +7505,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'dadosClientes', 'titulos'],
+  props: ['dadosCarros', 'dadosMarcas', 'dadosModelos', 'dadosClientes', 'dadosLocacoes', 'titulos'],
   methods: {
     getId: function getId(id) {
       this.$store.state.transacao.status = '';
@@ -8821,13 +8973,6 @@ var render = function render() {
   var _vm = this,
       _c = _vm._self._c;
 
-  return _vm._m(0);
-};
-
-var staticRenderFns = [function () {
-  var _vm = this,
-      _c = _vm._self._c;
-
   return _c("div", {
     staticClass: "container"
   }, [_c("div", {
@@ -8836,12 +8981,1116 @@ var staticRenderFns = [function () {
     staticClass: "col-md-8"
   }, [_c("div", {
     staticClass: "card"
-  }, [_c("div", {
-    staticClass: "card-header"
-  }, [_vm._v("Locações Component")]), _vm._v(" "), _c("div", {
-    staticClass: "card-body"
-  }, [_vm._v("\n                    I'm an locação component.\n                ")])])])])]);
-}];
+  }, [_c("card-component", {
+    attrs: {
+      titulo: "Procurar locação"
+    },
+    scopedSlots: _vm._u([{
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("div", {
+          staticClass: "row"
+        }, [_c("div", {
+          staticClass: "col mb-3"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "inputID",
+            titulo: "ID",
+            "help-id": "helpID",
+            "texto-ajuda": "Informe o ID (Opcional)."
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.buscar.id,
+            expression: "buscar.id"
+          }],
+          staticClass: "form-control",
+          attrs: {
+            type: "text",
+            id: "inputID",
+            "aria-describedby": "helpID",
+            placeholder: "ID do cliente"
+          },
+          domProps: {
+            value: _vm.buscar.id
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.buscar, "id", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "col mb-3"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "inputData",
+            titulo: "Data",
+            "help-id": "helpData",
+            "texto-ajuda": "Informe a Data de início do período (Opcional)."
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.buscar.data_inicio_periodo,
+            expression: "buscar.data_inicio_periodo"
+          }],
+          staticClass: "form-control",
+          attrs: {
+            type: "text",
+            id: "inputData",
+            "aria-describedby": "helpData",
+            placeholder: "00/00/0000"
+          },
+          domProps: {
+            value: _vm.buscar.data_inicio_periodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.buscar, "data_inicio_periodo", $event.target.value);
+            }
+          }
+        })])], 1)])];
+      },
+      proxy: true
+    }, {
+      key: "rodape",
+      fn: function fn() {
+        return [_c("div", {
+          staticClass: "row"
+        }, [_c("div", {
+          staticClass: "col"
+        }, [_c("button", {
+          staticClass: "btn btn-primary btn-sm",
+          attrs: {
+            type: "submit"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.pesquisar();
+            }
+          }
+        }, [_vm._v("Pesquisar")])]), _vm._v(" "), _c("div", {
+          staticClass: "col-10"
+        }, [_c("button", {
+          staticClass: "btn btn-outline-primary btn-sm",
+          attrs: {
+            type: "submit"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.limpar();
+            }
+          }
+        }, [_vm._v("Limpar")])])])];
+      },
+      proxy: true
+    }])
+  }), _vm._v(" "), _c("card-component", {
+    attrs: {
+      titulo: "Lista de locacões"
+    },
+    scopedSlots: _vm._u([{
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("table-component", {
+          attrs: {
+            dadosLocacoes: _vm.locacoes.data,
+            titulos: {
+              id: {
+                titulo: "Id",
+                tipo: "text"
+              },
+              valor_diaria: {
+                titulo: "Valor diaria",
+                tipo: "text"
+              },
+              km_inicial: {
+                titulo: "Km inicial",
+                tipo: "text"
+              },
+              km_final: {
+                titulo: "Km final",
+                tipo: "text"
+              },
+              created_at: {
+                titulo: "Data de cadastro",
+                tipo: "data"
+              }
+            }
+          }
+        })];
+      },
+      proxy: true
+    }, {
+      key: "rodape",
+      fn: function fn() {
+        return [_c("div", {
+          staticClass: "row"
+        }, [_c("div", {
+          staticClass: "col-10"
+        }, [_c("paginate-component", _vm._l(_vm.locacoes.links, function (l, key) {
+          return _c("li", {
+            key: key,
+            "class": l.active ? "page-item active" : "page-item"
+          }, [_c("a", {
+            staticClass: "page-link",
+            domProps: {
+              innerHTML: _vm._s(l.label)
+            },
+            on: {
+              click: function click($event) {
+                return _vm.paginacao(l);
+              }
+            }
+          })]);
+        }), 0)], 1), _vm._v(" "), _c("div", {
+          staticClass: "col"
+        }, [_c("button", {
+          staticClass: "btn btn-primary btn-sm float-right",
+          attrs: {
+            type: "button",
+            "data-bs-toggle": "modal",
+            "data-bs-target": "#modalAdicionar"
+          }
+        }, [_vm._v("Adicionar")])])])];
+      },
+      proxy: true
+    }])
+  }), _vm._v(" "), _c("modal-component", {
+    attrs: {
+      id: "modalAdicionar",
+      titulo: "Adicionar locação"
+    },
+    scopedSlots: _vm._u([{
+      key: "alertas",
+      fn: function fn() {
+        return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
+          attrs: {
+            tipo: "success",
+            detalhes: _vm.$store.state.transacao.mensagem,
+            titulo: "Registro adicionado com sucesso"
+          }
+        }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
+          attrs: {
+            tipo: "danger",
+            detalhes: _vm.$store.state.transacao.mensagem,
+            titulo: "Erro ao adicionar registro"
+          }
+        }) : _vm._e()];
+      },
+      proxy: true
+    }, {
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "Cliente_id"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "Cliente_id"
+          }
+        }, [_vm._v("Cliente_id")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.Cliente_id,
+            expression: "Cliente_id"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "cliente_id",
+            placeholder: "cliente_id"
+          },
+          domProps: {
+            value: _vm.Cliente_id
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.Cliente_id = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "Carro_id"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "Carro_id"
+          }
+        }, [_vm._v("Carro_id")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.Carro_id,
+            expression: "Carro_id"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "carro_id",
+            placeholder: "carro_id"
+          },
+          domProps: {
+            value: _vm.Carro_id
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.Carro_id = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "Data inicio periodo"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "data_inicio_periodo"
+          }
+        }, [_vm._v("Data inicio periodo")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.dataInicioPeriodo,
+            expression: "dataInicioPeriodo"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "data_inicio_periodo",
+            placeholder: "00/00/0000"
+          },
+          domProps: {
+            value: _vm.dataInicioPeriodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.dataInicioPeriodo = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "Data final previsto periodo"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "data_final_previsto_periodo"
+          }
+        }, [_vm._v("Data final previsto periodo")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.dataFinalPrevistoPeriodo,
+            expression: "dataFinalPrevistoPeriodo"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "data_final previsto_periodo",
+            placeholder: "00/00/0000"
+          },
+          domProps: {
+            value: _vm.dataFinalPrevistoPeriodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.dataFinalPrevistoPeriodo = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "Data final realizado periodo"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "data_final_realizado_periodo"
+          }
+        }, [_vm._v("Data final realizado periodo")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.dataFinalRealizadoPeriodo,
+            expression: "dataFinalRealizadoPeriodo"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "data_final realizado_periodo",
+            placeholder: "00/00/0000"
+          },
+          domProps: {
+            value: _vm.dataFinalRealizadoPeriodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.dataFinalRealizadoPeriodo = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "Valor diaria"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "valor_diaria"
+          }
+        }, [_vm._v("Valor diaria")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.valorDiaria,
+            expression: "valorDiaria"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "valor_diaria",
+            placeholder: "Digite o valor da diária"
+          },
+          domProps: {
+            value: _vm.valorDiaria
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.valorDiaria = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "km_inicial"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "km_inicial"
+          }
+        }, [_vm._v("Km inicial")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.kmInicial,
+            expression: "kmInicial"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "km_inicial",
+            placeholder: "Digite o Quilômetro inicial"
+          },
+          domProps: {
+            value: _vm.kmInicial
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.kmInicial = $event.target.value;
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "km_final"
+          }
+        }, [_c("label", {
+          staticClass: "form-label",
+          attrs: {
+            "for": "km_final"
+          }
+        }, [_vm._v("Km final")]), _vm._v(" "), _c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.kmFinal,
+            expression: "kmFinal"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "km_final",
+            placeholder: "Digite o Quilômetro final"
+          },
+          domProps: {
+            value: _vm.kmFinal
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+              _vm.kmFinal = $event.target.value;
+            }
+          }
+        })])], 1)];
+      },
+      proxy: true
+    }, {
+      key: "rodape",
+      fn: function fn() {
+        return [_c("button", {
+          staticClass: "btn btn-secondary",
+          attrs: {
+            type: "button",
+            "data-bs-dismiss": "modal"
+          }
+        }, [_vm._v("Fechar")]), _vm._v(" "), _c("button", {
+          staticClass: "btn btn-primary",
+          attrs: {
+            type: "button"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.salvar();
+            }
+          }
+        }, [_vm._v("Salvar")])];
+      },
+      proxy: true
+    }])
+  }), _vm._v(" "), _c("modal-component", {
+    attrs: {
+      id: "modalVisualizar",
+      titulo: "Visualizar locação"
+    },
+    scopedSlots: _vm._u([{
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("inputContainer-component", {
+          attrs: {
+            titulo: "ID"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.id
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Cliente_ID"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.cliente_id
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Carro_ID"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.carro_id
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Valor diária"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.valor_diaria
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Km inicial"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.km_inicial
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Km final"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.km_final
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data início período"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.data_inicio_periodo)
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data final previsto período"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.data_final_previsto_periodo)
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data final realizado periodo"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.data_final_realizado_periodo)
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data de cadastro"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.created_at)
+          }
+        })])];
+      },
+      proxy: true
+    }, {
+      key: "rodape",
+      fn: function fn() {
+        return [_c("button", {
+          staticClass: "btn btn-secondary",
+          attrs: {
+            type: "button",
+            "data-bs-dismiss": "modal"
+          }
+        }, [_vm._v("Fechar")])];
+      },
+      proxy: true
+    }])
+  }), _vm._v(" "), _c("modal-component", {
+    attrs: {
+      id: "modalRemover",
+      titulo: "Remover cliente"
+    },
+    scopedSlots: _vm._u([{
+      key: "alertas",
+      fn: function fn() {
+        return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
+          attrs: {
+            tipo: "success",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Registro removido com sucesso"
+          }
+        }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
+          attrs: {
+            tipo: "danger",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Erro ao remover registro"
+          }
+        }) : _vm._e()];
+      },
+      proxy: true
+    }, _vm.$store.state.transacao.status != "sucesso" ? {
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("inputContainer-component", {
+          attrs: {
+            titulo: "ID"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.id
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Cliente_ID"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.cliente_id
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Carro_ID"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.carro_id
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Valor diária"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.valor_diaria
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Km inicial"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.km_inicial
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Km final"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.km_final
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data início período"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm.$store.state.item.data_inicio_periodo
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data final previsto período"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.data_final_previsto_periodo)
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data final realizado periodo"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.data_final_realizado_periodo)
+          }
+        })]), _vm._v(" "), _c("inputContainer-component", {
+          attrs: {
+            titulo: "Data de cadastro"
+          }
+        }, [_c("input", {
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            disabled: ""
+          },
+          domProps: {
+            value: _vm._f("formataData")(_vm.$store.state.item.created_at)
+          }
+        })])];
+      },
+      proxy: true
+    } : null, {
+      key: "rodape",
+      fn: function fn() {
+        return [_vm.$store.state.transacao.status != "sucesso" ? _c("button", {
+          staticClass: "btn btn-danger",
+          attrs: {
+            type: "button"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.remover();
+            }
+          }
+        }, [_vm._v("Excluir")]) : _vm._e(), _vm._v(" "), _c("button", {
+          staticClass: "btn btn-secondary",
+          attrs: {
+            type: "button",
+            "data-bs-dismiss": "modal"
+          }
+        }, [_vm._v("Fechar")])];
+      },
+      proxy: true
+    }], null, true)
+  }), _vm._v(" "), _c("modal-component", {
+    attrs: {
+      id: "modalEditar",
+      titulo: "Atualizar locação"
+    },
+    scopedSlots: _vm._u([{
+      key: "alertas",
+      fn: function fn() {
+        return [_vm.$store.state.transacao.status == "sucesso" ? _c("alert-component", {
+          attrs: {
+            tipo: "success",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Registro atualizado com sucesso"
+          }
+        }) : _vm._e(), _vm._v(" "), _vm.$store.state.transacao.status == "erro" ? _c("alert-component", {
+          attrs: {
+            tipo: "danger",
+            detalhes: _vm.$store.state.transacao,
+            titulo: "Erro ao atualizar registro"
+          }
+        }) : _vm._e()];
+      },
+      proxy: true
+    }, {
+      key: "conteudo",
+      fn: function fn() {
+        return [_c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "atualizarClienteID"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.cliente_id,
+            expression: "$store.state.item.cliente_id"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "atualizarClienteID",
+            placeholder: "ID do cliente"
+          },
+          domProps: {
+            value: _vm.$store.state.item.cliente_id
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "cliente_id", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "atualizarCarroID"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.carro_id,
+            expression: "$store.state.item.carro_id"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text",
+            id: "atualizarCarroID",
+            placeholder: "ID do carro"
+          },
+          domProps: {
+            value: _vm.$store.state.item.carro_id
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "carro_id", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            id: "AtualizarValorDiaria"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.valor_diaria,
+            expression: "$store.state.item.valor_diaria"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text"
+          },
+          domProps: {
+            value: _vm.$store.state.item.valor_diaria
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "valor_diaria", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            titulo: "Km inicial"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.km_inicial,
+            expression: "$store.state.item.km_inicial"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text"
+          },
+          domProps: {
+            value: _vm.$store.state.item.km_inicial
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "km_inicial", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            titulo: "Km final"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.km_final,
+            expression: "$store.state.item.km_final"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text"
+          },
+          domProps: {
+            value: _vm.$store.state.item.km_final
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "km_final", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            titulo: "Data início período"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.data_inicio_periodo,
+            expression: "$store.state.item.data_inicio_periodo"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text"
+          },
+          domProps: {
+            value: _vm.$store.state.item.data_inicio_periodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "data_inicio_periodo", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            titulo: "Data final previsto período"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.data_final_previsto_periodo,
+            expression: "$store.state.item.data_final_previsto_periodo"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text"
+          },
+          domProps: {
+            value: _vm.$store.state.item.data_final_previsto_periodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "data_final_previsto_periodo", $event.target.value);
+            }
+          }
+        })])], 1), _vm._v(" "), _c("div", {
+          staticClass: "form-group"
+        }, [_c("inputContainer-component", {
+          attrs: {
+            titulo: "Data final realizado periodo"
+          }
+        }, [_c("input", {
+          directives: [{
+            name: "model",
+            rawName: "v-model",
+            value: _vm.$store.state.item.data_final_realizado_periodo,
+            expression: "$store.state.item.data_final_realizado_periodo"
+          }],
+          staticClass: "form-control mb-2",
+          attrs: {
+            type: "text"
+          },
+          domProps: {
+            value: _vm.$store.state.item.data_final_realizado_periodo
+          },
+          on: {
+            input: function input($event) {
+              if ($event.target.composing) return;
+
+              _vm.$set(_vm.$store.state.item, "data_final_realizado_periodo", $event.target.value);
+            }
+          }
+        })])], 1)];
+      },
+      proxy: true
+    }, {
+      key: "rodape",
+      fn: function fn() {
+        return [_c("button", {
+          staticClass: "btn btn-secondary",
+          attrs: {
+            type: "button",
+            "data-bs-dismiss": "modal"
+          }
+        }, [_vm._v("Fechar")]), _vm._v(" "), _c("button", {
+          staticClass: "btn btn-primary",
+          attrs: {
+            type: "button"
+          },
+          on: {
+            click: function click($event) {
+              return _vm.atualizar();
+            }
+          }
+        }, [_vm._v("Atualizar")])];
+      },
+      proxy: true
+    }])
+  })], 1)])])]);
+};
+
+var staticRenderFns = [];
 render._withStripped = true;
 
 
@@ -10712,6 +11961,47 @@ var render = function render() {
         }
       }
     }, [_vm._v("Excluir")])])]);
+  }), _vm._v(" "), _vm._l(_vm.dadosLocacoes, function (lc) {
+    return _c("tr", {
+      key: lc.id
+    }, [_c("th", {
+      attrs: {
+        scope: "row"
+      }
+    }, [_vm._v(_vm._s(lc.id))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("replaceValor")(lc.valor_diaria)))]), _vm._v(" "), _c("td", [_vm._v(_vm._s(lc.km_inicial) + "km")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(lc.km_final) + "km")]), _vm._v(" "), _c("td", [_vm._v(_vm._s(_vm._f("formataData")(lc.created_at)))]), _vm._v(" "), _c("td", [_c("button", {
+      staticClass: "btn btn-success btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalVisualizar"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(lc);
+        }
+      }
+    }, [_vm._v("Ver")]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-primary btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalEditar"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(lc);
+        }
+      }
+    }, [_vm._v("Editar")]), _vm._v(" "), _c("button", {
+      staticClass: "btn btn-danger btn-sm",
+      attrs: {
+        "data-bs-toggle": "modal",
+        "data-bs-target": "#modalRemover"
+      },
+      on: {
+        click: function click($event) {
+          return _vm.getId(lc);
+        }
+      }
+    }, [_vm._v("Excluir")])])]);
   })], 2)]);
 };
 
@@ -10751,6 +12041,16 @@ Vue.filter('formataData', function (t) {
   data = data.split('-');
   data = data[2] + '/' + data[1] + '/' + data[0];
   return data;
+});
+Vue.filter('replaceValor', function (r) {
+  if (!r) {
+    return '';
+  }
+
+  var valor;
+  valor = r.toString();
+  valor = valor.replace('.', ',');
+  return valor;
 });
 var store = new Vuex__WEBPACK_IMPORTED_MODULE_0__["default"].Store({
   state: {

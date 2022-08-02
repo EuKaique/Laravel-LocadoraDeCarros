@@ -28,6 +28,19 @@ Vue.filter('formataData', function(t){
     return data
 })
 
+Vue.filter('replaceValor', function(r){
+    if(!r){
+        return ''
+    }
+
+    let valor
+    valor = r.toString()
+    valor = valor.replace('.',',')
+
+    return valor
+
+})
+
 const store = new Vuex.Store({
     state: {
         item: {},
