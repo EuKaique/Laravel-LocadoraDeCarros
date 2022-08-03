@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <!-- INICIO DA BUSCA DE MARCAS -->
+                <!-- INICIO DA BUSCA DE CARROS -->
                 <card-component titulo="Buscar carros">
                     <template v-slot:conteudo>
                         <div class="row">
@@ -29,9 +29,9 @@
                         </div>
                     </template>
                 </card-component>
-                <!-- FIM DA BUSCA DE MARCAS -->
+                <!-- FIM DA BUSCA DE CARROS -->
 
-                <!-- INICIO DA LISTAGEM DE MARCAS -->
+                <!-- INICIO DA LISTAGEM DE CARROS -->
                 <card-component titulo="Listagem de carros">
                     <template v-slot:conteudo>
                         <table-component 
@@ -59,7 +59,7 @@
                         </div>
                     </template>
                 </card-component>
-                <!-- FIM DO CARD DE LISTAGEM DE MARCAS -->
+                <!-- FIM DO CARD DE LISTAGEM DE CARROS -->
             </div>
         </div>
         <!-- INICIO MODAL DE ADICIONAR CARRO -->
@@ -70,24 +70,29 @@
             </template>
             <template v-slot:conteudo>
                 <div class="form-group">
-                    <inputContainer-component id="placa" titulo="placa">
-                        <label for="placa" class="form-label">Placa</label>
+                    <inputContainer-component id="placa" titulo="Placa">
                         <input type="text" class="form-control mb-2" id="placa" placeholder="Placa do carro" v-model="placa">
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="modelo_id" titulo="Modelo ID">
-                        <input type="number" min="1" class="form-control mb-2" id="modelo_id" placeholder="Modelo do carro" v-model="modelo_id">
+                    <inputContainer-component id="modelo_id" titulo="Modelo id">
+                        <select class="form-select" name="modelo_id" id="modelo_id" v-if="carros.data != ''">
+                            <option value="">-- Selecione --</option>          
+                            <option v-for="dados in carros.data" :key="dados.id" :value="dados.modelo_id">{{ dados.modelo_id }}</option>
+                        </select>
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="disponivel" titulo="disponivel">
-                        <input type="number" min="0" max="1" class="form-control" id="disponivel" placeholder="0 é não, 1 é sim" v-model="disponivel">
+                    <inputContainer-component id="disponivel" titulo="Disponivel">
+                        <select class="form-select" name="disponivel" id="disponivel">
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>   
+                        </select>
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="km" titulo="quilometro">
-                        <input type="number" min="0" class="form-control mb-2" id="km" placeholder="Km/h" v-model="km">
+                    <inputContainer-component id="km" titulo="Quilometro">
+                        <input type="text" class="form-control mb-2" id="km" placeholder="Km/h" v-model="km">
                     </inputContainer-component>
                 </div>
             </template>
@@ -149,13 +154,16 @@
             </template>
             <template v-slot:conteudo>
                 <div class="form-group">
-                    <inputContainer-component id="atualizarPlaca">
+                    <inputContainer-component id="atualizarPlaca" titulo="Placa">
                         <input type="text" class="form-control mb-2" id="atualizarPlaca" placeholder="Placa do carro" v-model="$store.state.item.placa">
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="AtualizaDisponibilidade">
-                        <input type="number" min="0" max="1" class="form-control" id="AtualizaDisponibilidade" placeholder="0 é não, 1 é sim" v-model="$store.state.item.disponivel">
+                    <inputContainer-component id="AtualizaDisponibilidade" titulo="Disponibilidade">
+                        <select class="form-select" name="AtualizaDisponibilidade" id="AtualizaDisponibilidade">
+                            <option :value="$store.state.item.disponivel">{{ $store.state.item.disponivel }}</option>
+                            <option :value="$store.state.item.disponivel == 'Sim' ? 'Não' : 'Sim'">{{ $store.state.item.disponivel == 'Sim' ? 'Não' : 'Sim' }}</option>   
+                        </select>
                     </inputContainer-component>
                 </div>
             </template>
@@ -284,7 +292,6 @@
                 axios.get(url)
                 .then(response => {
                     this.carros = response.data
-                    console.log(this.carros)
                 })
                 .catch(errors => {
                     console.log(errors)

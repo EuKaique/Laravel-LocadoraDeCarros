@@ -97,12 +97,18 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="air_bag" titulo="Air bag">
-                        <input type="text" class="form-control mb-2" id="air_bag" placeholder="Tem air bag? 0 não, 1 Sim" v-model="air_bag">
+                        <select class="form-select" name="air_bag" id="air_bag">
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="abs" titulo="Abs">
-                        <input type="text" class="form-control mb-2" id="abs" placeholder="Tem abs? 0 não, 1 Sim" v-model="abs">
+                        <select class="form-select" name="abs" id="abs">
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
                     </inputContainer-component>
                 </div>
             </template>
@@ -210,12 +216,20 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="air_bag" titulo="Air bag">
-                        <input type="text" class="form-control mb-2" id="air_bag" placeholder="Tem air bag? 0 não, 1 Sim" :value="$store.state.item.air_bag == 1 ? 'Sim' : 'Não'">
+                        <select class="form-select" name="air_bag" id="air_bag">
+                            <option :value="$store.state.item.air_bag">{{ $store.state.item.air_bag }}</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="abs" titulo="Abs">
-                        <input type="text" class="form-control mb-2" id="abs" placeholder="Tem abs? 0 não, 1 Sim" :value="$store.state.item.abs == 1 ? 'Sim' : 'Não'">
+                        <select class="form-select" name="abs" id="abs">
+                            <option :value="$store.state.item.abs">{{ $store.state.item.abs }}</option>
+                            <option value="Sim">Sim</option>
+                            <option value="Não">Não</option>
+                        </select>
                     </inputContainer-component>
                 </div>
             </template>

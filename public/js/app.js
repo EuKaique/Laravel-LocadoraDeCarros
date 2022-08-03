@@ -6680,7 +6680,6 @@ __webpack_require__.r(__webpack_exports__);
       var url = this.urlBase + '?' + this.urlPage + this.urlFiltro;
       axios.get(url).then(function (response) {
         _this3.carros = response.data;
-        console.log(_this3.carros);
       })["catch"](function (errors) {
         console.log(errors);
       });
@@ -6947,6 +6946,12 @@ __webpack_require__.r(__webpack_exports__);
       kmFinal: '',
       transacaoDetalhes: [],
       locacoes: {
+        data: []
+      },
+      carros: {
+        data: []
+      },
+      clientes: {
         data: []
       },
       buscar: {
@@ -7820,14 +7825,9 @@ var render = function render() {
         }, [_c("inputContainer-component", {
           attrs: {
             id: "placa",
-            titulo: "placa"
+            titulo: "Placa"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "placa"
-          }
-        }, [_vm._v("Placa")]), _vm._v(" "), _c("input", {
+        }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
@@ -7854,68 +7854,52 @@ var render = function render() {
         }, [_c("inputContainer-component", {
           attrs: {
             id: "modelo_id",
-            titulo: "Modelo ID"
+            titulo: "Modelo id"
           }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.modelo_id,
-            expression: "modelo_id"
-          }],
-          staticClass: "form-control mb-2",
+        }, [_vm.carros.data != "" ? _c("select", {
+          staticClass: "form-select",
           attrs: {
-            type: "number",
-            min: "1",
-            id: "modelo_id",
-            placeholder: "Modelo do carro"
-          },
-          domProps: {
-            value: _vm.modelo_id
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.modelo_id = $event.target.value;
-            }
+            name: "modelo_id",
+            id: "modelo_id"
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_c("option", {
+          attrs: {
+            value: ""
+          }
+        }, [_vm._v("-- Selecione --")]), _vm._v(" "), _vm._l(_vm.carros.data, function (dados) {
+          return _c("option", {
+            key: dados.id,
+            domProps: {
+              value: dados.modelo_id
+            }
+          }, [_vm._v(_vm._s(dados.modelo_id))]);
+        })], 2) : _vm._e()])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
             id: "disponivel",
-            titulo: "disponivel"
+            titulo: "Disponivel"
           }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.disponivel,
-            expression: "disponivel"
-          }],
-          staticClass: "form-control",
+        }, [_c("select", {
+          staticClass: "form-select",
           attrs: {
-            type: "number",
-            min: "0",
-            max: "1",
-            id: "disponivel",
-            placeholder: "0 é não, 1 é sim"
-          },
-          domProps: {
-            value: _vm.disponivel
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.disponivel = $event.target.value;
-            }
+            name: "disponivel",
+            id: "disponivel"
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_c("option", {
+          attrs: {
+            value: "Sim"
+          }
+        }, [_vm._v("Sim")]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Não"
+          }
+        }, [_vm._v("Não")])])])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
             id: "km",
-            titulo: "quilometro"
+            titulo: "Quilometro"
           }
         }, [_c("input", {
           directives: [{
@@ -7926,8 +7910,7 @@ var render = function render() {
           }],
           staticClass: "form-control mb-2",
           attrs: {
-            type: "number",
-            min: "0",
+            type: "text",
             id: "km",
             placeholder: "Km/h"
           },
@@ -8137,7 +8120,8 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "atualizarPlaca"
+            id: "atualizarPlaca",
+            titulo: "Placa"
           }
         }, [_c("input", {
           directives: [{
@@ -8166,34 +8150,24 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
+            id: "AtualizaDisponibilidade",
+            titulo: "Disponibilidade"
+          }
+        }, [_c("select", {
+          staticClass: "form-select",
+          attrs: {
+            name: "AtualizaDisponibilidade",
             id: "AtualizaDisponibilidade"
           }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.$store.state.item.disponivel,
-            expression: "$store.state.item.disponivel"
-          }],
-          staticClass: "form-control",
-          attrs: {
-            type: "number",
-            min: "0",
-            max: "1",
-            id: "AtualizaDisponibilidade",
-            placeholder: "0 é não, 1 é sim"
-          },
+        }, [_c("option", {
           domProps: {
             value: _vm.$store.state.item.disponivel
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-
-              _vm.$set(_vm.$store.state.item, "disponivel", $event.target.value);
-            }
           }
-        })])], 1)];
+        }, [_vm._v(_vm._s(_vm.$store.state.item.disponivel))]), _vm._v(" "), _c("option", {
+          domProps: {
+            value: _vm.$store.state.item.disponivel == "Sim" ? "Não" : "Sim"
+          }
+        }, [_vm._v(_vm._s(_vm.$store.state.item.disponivel == "Sim" ? "Não" : "Sim"))])])])], 1)];
       },
       proxy: true
     }, {
@@ -9193,80 +9167,84 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "Cliente_id"
+            id: "Cliente_id",
+            titulo: "Cliente_id"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "Cliente_id"
-          }
-        }, [_vm._v("Cliente_id")]), _vm._v(" "), _c("input", {
+        }, [_vm.locacoes.data != "" ? _c("select", {
           directives: [{
             name: "model",
             rawName: "v-model",
             value: _vm.Cliente_id,
             expression: "Cliente_id"
           }],
-          staticClass: "form-control mb-2",
-          attrs: {
-            type: "text",
-            id: "cliente_id",
-            placeholder: "cliente_id"
-          },
-          domProps: {
-            value: _vm.Cliente_id
-          },
+          staticClass: "form-select",
           on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.Cliente_id = $event.target.value;
+            change: function change($event) {
+              var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+                return o.selected;
+              }).map(function (o) {
+                var val = "_value" in o ? o._value : o.value;
+                return val;
+              });
+              _vm.Cliente_id = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
             }
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_c("option", {
+          attrs: {
+            value: ""
+          }
+        }, [_vm._v("-- Selecione --")]), _vm._v(" "), _vm._l(_vm.locacoes.data, function (dados) {
+          return _c("option", {
+            key: dados.id,
+            domProps: {
+              value: dados.cliente_id
+            }
+          }, [_vm._v(_vm._s(dados.cliente_id))]);
+        })], 2) : _vm._e()])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "Carro_id"
+            id: "Carro_id",
+            titulo: "Carro_id"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "Carro_id"
-          }
-        }, [_vm._v("Carro_id")]), _vm._v(" "), _c("input", {
+        }, [_vm.locacoes.data != "" ? _c("select", {
           directives: [{
             name: "model",
             rawName: "v-model",
             value: _vm.Carro_id,
             expression: "Carro_id"
           }],
-          staticClass: "form-control mb-2",
-          attrs: {
-            type: "text",
-            id: "carro_id",
-            placeholder: "carro_id"
-          },
-          domProps: {
-            value: _vm.Carro_id
-          },
+          staticClass: "form-select",
           on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.Carro_id = $event.target.value;
+            change: function change($event) {
+              var $$selectedVal = Array.prototype.filter.call($event.target.options, function (o) {
+                return o.selected;
+              }).map(function (o) {
+                var val = "_value" in o ? o._value : o.value;
+                return val;
+              });
+              _vm.Carro_id = $event.target.multiple ? $$selectedVal : $$selectedVal[0];
             }
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_c("option", {
+          attrs: {
+            value: ""
+          }
+        }, [_vm._v("-- Selecione --")]), _vm._v(" "), _vm._l(_vm.locacoes.data, function (dados) {
+          return _c("option", {
+            key: dados.id,
+            domProps: {
+              value: dados.carro_id
+            }
+          }, [_vm._v(_vm._s(dados.carro_id))]);
+        })], 2) : _vm._e()])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "Data inicio periodo"
+            id: "Data inicio periodo",
+            titulo: "Data inicio periodo"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "data_inicio_periodo"
-          }
-        }, [_vm._v("Data inicio periodo")]), _vm._v(" "), _c("input", {
+        }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
@@ -9292,14 +9270,10 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "Data final previsto periodo"
+            id: "Data final previsto periodo",
+            titulo: "Data final previsto periodo"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "data_final_previsto_periodo"
-          }
-        }, [_vm._v("Data final previsto periodo")]), _vm._v(" "), _c("input", {
+        }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
@@ -9325,14 +9299,10 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "Data final realizado periodo"
+            id: "Data final realizado periodo",
+            titulo: "Data final realizado periodo"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "data_final_realizado_periodo"
-          }
-        }, [_vm._v("Data final realizado periodo")]), _vm._v(" "), _c("input", {
+        }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
@@ -9358,7 +9328,8 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "Valor diaria"
+            id: "Valor diaria",
+            titulo: "Valor diaria"
           }
         }, [_c("label", {
           staticClass: "form-label",
@@ -9391,7 +9362,8 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "km_inicial"
+            id: "km_inicial",
+            titulo: "Km inicial"
           }
         }, [_c("label", {
           staticClass: "form-label",
@@ -9424,14 +9396,10 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "km_final"
+            id: "km_final",
+            titulo: "Km final"
           }
-        }, [_c("label", {
-          staticClass: "form-label",
-          attrs: {
-            "for": "km_final"
-          }
-        }, [_vm._v("Km final")]), _vm._v(" "), _c("input", {
+        }, [_c("input", {
           directives: [{
             name: "model",
             rawName: "v-model",
@@ -9845,61 +9813,51 @@ var render = function render() {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "atualizarClienteID"
-          }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.$store.state.item.cliente_id,
-            expression: "$store.state.item.cliente_id"
-          }],
-          staticClass: "form-control mb-2",
-          attrs: {
-            type: "text",
             id: "atualizarClienteID",
-            placeholder: "ID do cliente"
-          },
-          domProps: {
-            value: _vm.$store.state.item.cliente_id
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-
-              _vm.$set(_vm.$store.state.item, "cliente_id", $event.target.value);
-            }
+            titulo: "Cliente ID"
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_vm.locacoes.data != "" ? _c("select", {
+          staticClass: "form-select",
+          attrs: {
+            name: "cliente_id",
+            id: "cliente_id"
+          }
+        }, [_c("option", {
+          attrs: {
+            value: ""
+          }
+        }, [_vm._v("-- Selecione --")]), _vm._v(" "), _vm._l(_vm.locacoes.data, function (dados) {
+          return _c("option", {
+            key: dados.id,
+            domProps: {
+              value: dados.cliente_id
+            }
+          }, [_vm._v(_vm._s(dados.cliente_id))]);
+        })], 2) : _vm._e()])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
-            id: "atualizarCarroID"
-          }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.$store.state.item.carro_id,
-            expression: "$store.state.item.carro_id"
-          }],
-          staticClass: "form-control mb-2",
-          attrs: {
-            type: "text",
             id: "atualizarCarroID",
-            placeholder: "ID do carro"
-          },
-          domProps: {
-            value: _vm.$store.state.item.carro_id
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-
-              _vm.$set(_vm.$store.state.item, "carro_id", $event.target.value);
-            }
+            titulo: "Carro ID"
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_vm.locacoes.data != "" ? _c("select", {
+          staticClass: "form-select",
+          attrs: {
+            name: "carro_id",
+            id: "carro_id"
+          }
+        }, [_c("option", {
+          attrs: {
+            value: ""
+          }
+        }, [_vm._v("-- Selecione --")]), _vm._v(" "), _vm._l(_vm.locacoes.data, function (dados) {
+          return _c("option", {
+            key: dados.id,
+            domProps: {
+              value: dados.carro_id
+            }
+          }, [_vm._v(_vm._s(dados.carro_id))]);
+        })], 2) : _vm._e()])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
@@ -9987,25 +9945,12 @@ var render = function render() {
             titulo: "Data início período"
           }
         }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.$store.state.item.data_inicio_periodo,
-            expression: "$store.state.item.data_inicio_periodo"
-          }],
           staticClass: "form-control mb-2",
           attrs: {
             type: "text"
           },
           domProps: {
-            value: _vm.$store.state.item.data_inicio_periodo
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-
-              _vm.$set(_vm.$store.state.item, "data_inicio_periodo", $event.target.value);
-            }
+            value: _vm._f("dataParaLocacoes")(_vm.$store.state.item.data_inicio_periodo)
           }
         })])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
@@ -10014,25 +9959,12 @@ var render = function render() {
             titulo: "Data final previsto período"
           }
         }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.$store.state.item.data_final_previsto_periodo,
-            expression: "$store.state.item.data_final_previsto_periodo"
-          }],
           staticClass: "form-control mb-2",
           attrs: {
             type: "text"
           },
           domProps: {
-            value: _vm.$store.state.item.data_final_previsto_periodo
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-
-              _vm.$set(_vm.$store.state.item, "data_final_previsto_periodo", $event.target.value);
-            }
+            value: _vm._f("dataParaLocacoes")(_vm.$store.state.item.data_final_previsto_periodo)
           }
         })])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
@@ -10041,25 +9973,12 @@ var render = function render() {
             titulo: "Data final realizado periodo"
           }
         }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.$store.state.item.data_final_realizado_periodo,
-            expression: "$store.state.item.data_final_realizado_periodo"
-          }],
           staticClass: "form-control mb-2",
           attrs: {
             type: "text"
           },
           domProps: {
-            value: _vm.$store.state.item.data_final_realizado_periodo
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-
-              _vm.$set(_vm.$store.state.item, "data_final_realizado_periodo", $event.target.value);
-            }
+            value: _vm._f("dataParaLocacoes")(_vm.$store.state.item.data_final_realizado_periodo)
           }
         })])], 1)];
       },
@@ -11232,58 +11151,42 @@ var render = function render() {
             id: "air_bag",
             titulo: "Air bag"
           }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.air_bag,
-            expression: "air_bag"
-          }],
-          staticClass: "form-control mb-2",
+        }, [_c("select", {
+          staticClass: "form-select",
           attrs: {
-            type: "text",
-            id: "air_bag",
-            placeholder: "Tem air bag? 0 não, 1 Sim"
-          },
-          domProps: {
-            value: _vm.air_bag
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.air_bag = $event.target.value;
-            }
+            name: "air_bag",
+            id: "air_bag"
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_c("option", {
+          attrs: {
+            value: "Sim"
+          }
+        }, [_vm._v("Sim")]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Não"
+          }
+        }, [_vm._v("Não")])])])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
             id: "abs",
             titulo: "Abs"
           }
-        }, [_c("input", {
-          directives: [{
-            name: "model",
-            rawName: "v-model",
-            value: _vm.abs,
-            expression: "abs"
-          }],
-          staticClass: "form-control mb-2",
+        }, [_c("select", {
+          staticClass: "form-select",
           attrs: {
-            type: "text",
-            id: "abs",
-            placeholder: "Tem abs? 0 não, 1 Sim"
-          },
-          domProps: {
-            value: _vm.abs
-          },
-          on: {
-            input: function input($event) {
-              if ($event.target.composing) return;
-              _vm.abs = $event.target.value;
-            }
+            name: "abs",
+            id: "abs"
           }
-        })])], 1)];
+        }, [_c("option", {
+          attrs: {
+            value: "Sim"
+          }
+        }, [_vm._v("Sim")]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Não"
+          }
+        }, [_vm._v("Não")])])])], 1)];
       },
       proxy: true
     }, {
@@ -11664,34 +11567,50 @@ var render = function render() {
             id: "air_bag",
             titulo: "Air bag"
           }
-        }, [_c("input", {
-          staticClass: "form-control mb-2",
+        }, [_c("select", {
+          staticClass: "form-select",
           attrs: {
-            type: "text",
-            id: "air_bag",
-            placeholder: "Tem air bag? 0 não, 1 Sim"
-          },
-          domProps: {
-            value: _vm.$store.state.item.air_bag == 1 ? "Sim" : "Não"
+            name: "air_bag",
+            id: "air_bag"
           }
-        })])], 1), _vm._v(" "), _c("div", {
+        }, [_c("option", {
+          domProps: {
+            value: _vm.$store.state.item.air_bag
+          }
+        }, [_vm._v(_vm._s(_vm.$store.state.item.air_bag))]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Sim"
+          }
+        }, [_vm._v("Sim")]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Não"
+          }
+        }, [_vm._v("Não")])])])], 1), _vm._v(" "), _c("div", {
           staticClass: "form-group"
         }, [_c("inputContainer-component", {
           attrs: {
             id: "abs",
             titulo: "Abs"
           }
-        }, [_c("input", {
-          staticClass: "form-control mb-2",
+        }, [_c("select", {
+          staticClass: "form-select",
           attrs: {
-            type: "text",
-            id: "abs",
-            placeholder: "Tem abs? 0 não, 1 Sim"
-          },
-          domProps: {
-            value: _vm.$store.state.item.abs == 1 ? "Sim" : "Não"
+            name: "abs",
+            id: "abs"
           }
-        })])], 1)];
+        }, [_c("option", {
+          domProps: {
+            value: _vm.$store.state.item.abs
+          }
+        }, [_vm._v(_vm._s(_vm.$store.state.item.abs))]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Sim"
+          }
+        }, [_vm._v("Sim")]), _vm._v(" "), _c("option", {
+          attrs: {
+            value: "Não"
+          }
+        }, [_vm._v("Não")])])])], 1)];
       },
       proxy: true
     }, {
@@ -12036,6 +11955,18 @@ Vue.filter('formataData', function (t) {
   }
 
   t = t.split('T');
+  var data = t[0]; //Formatando a data
+
+  data = data.split('-');
+  data = data[2] + '/' + data[1] + '/' + data[0];
+  return data;
+});
+Vue.filter('dataParaLocacoes', function (t) {
+  if (!t) {
+    return '';
+  }
+
+  t = t.split(' ');
   var data = t[0]; //Formatando a data
 
   data = data.split('-');

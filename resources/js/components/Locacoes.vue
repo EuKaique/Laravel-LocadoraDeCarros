@@ -71,50 +71,50 @@
                     </template>
                     <template v-slot:conteudo>
                         <div class="form-group">
-                            <inputContainer-component id="Cliente_id">
-                                <label for="Cliente_id" class="form-label">Cliente_id</label>
-                                <input type="text" class="form-control mb-2" id="cliente_id" placeholder="cliente_id" v-model="Cliente_id">
+                            <inputContainer-component id="Cliente_id" titulo="Cliente_id">
+                                <select class="form-select" v-model="Cliente_id" v-if="locacoes.data != ''">
+                                    <option value="">-- Selecione --</option>          
+                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.cliente_id">{{ dados.cliente_id }}</option>
+                                </select>
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="Carro_id">
-                                <label for="Carro_id" class="form-label">Carro_id</label>
-                                <input type="text" class="form-control mb-2" id="carro_id" placeholder="carro_id" v-model="Carro_id">
+                            <inputContainer-component id="Carro_id" titulo="Carro_id">
+                                <select class="form-select" v-model="Carro_id" v-if="locacoes.data != ''">
+                                    <option value="">-- Selecione --</option>          
+                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.carro_id">{{ dados.carro_id }}</option>
+                                </select>
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="Data inicio periodo">
-                                <label for="data_inicio_periodo" class="form-label">Data inicio periodo</label>
+                            <inputContainer-component id="Data inicio periodo" titulo="Data inicio periodo">
                                 <input type="text" class="form-control mb-2" id="data_inicio_periodo" placeholder="00/00/0000" v-model="dataInicioPeriodo">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="Data final previsto periodo">
-                                <label for="data_final_previsto_periodo" class="form-label">Data final previsto periodo</label>
+                            <inputContainer-component id="Data final previsto periodo" titulo="Data final previsto periodo">
                                 <input type="text" class="form-control mb-2" id="data_final previsto_periodo" placeholder="00/00/0000" v-model="dataFinalPrevistoPeriodo">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="Data final realizado periodo">
-                                <label for="data_final_realizado_periodo" class="form-label">Data final realizado periodo</label>
+                            <inputContainer-component id="Data final realizado periodo" titulo="Data final realizado periodo">
                                 <input type="text" class="form-control mb-2" id="data_final realizado_periodo" placeholder="00/00/0000" v-model="dataFinalRealizadoPeriodo">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="Valor diaria">
+                            <inputContainer-component id="Valor diaria" titulo="Valor diaria">
                                 <label for="valor_diaria" class="form-label">Valor diaria</label>
                                 <input type="text" class="form-control mb-2" id="valor_diaria" placeholder="Digite o valor da diária" v-model="valorDiaria">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="km_inicial">
+                            <inputContainer-component id="km_inicial" titulo="Km inicial">
                                 <label for="km_inicial" class="form-label">Km inicial</label>
                                 <input type="text" class="form-control mb-2" id="km_inicial" placeholder="Digite o Quilômetro inicial" v-model="kmInicial">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="km_final">
-                                <label for="km_final" class="form-label">Km final</label>
+                            <inputContainer-component id="km_final" titulo="Km final">
                                 <input type="text" class="form-control mb-2" id="km_final" placeholder="Digite o Quilômetro final" v-model="kmFinal">
                             </inputContainer-component>
                         </div>
@@ -237,13 +237,19 @@
                     </template>
                     <template v-slot:conteudo>
                         <div class="form-group">
-                            <inputContainer-component id="atualizarClienteID">
-                                <input type="text" class="form-control mb-2" id="atualizarClienteID" placeholder="ID do cliente" v-model="$store.state.item.cliente_id">
+                            <inputContainer-component id="atualizarClienteID" titulo="Cliente ID">
+                                <select class="form-select" name="cliente_id" id="cliente_id" v-if="locacoes.data != ''">
+                                    <option value="">-- Selecione --</option>          
+                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.cliente_id">{{ dados.cliente_id }}</option>
+                                </select>
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="atualizarCarroID">
-                                <input type="text" class="form-control mb-2" id="atualizarCarroID" placeholder="ID do carro" v-model="$store.state.item.carro_id">
+                            <inputContainer-component id="atualizarCarroID" titulo="Carro ID">
+                                <select class="form-select" name="carro_id" id="carro_id" v-if="locacoes.data != ''">
+                                    <option value="">-- Selecione --</option>          
+                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.carro_id">{{ dados.carro_id }}</option>
+                                </select>
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
@@ -263,17 +269,17 @@
                         </div>
                         <div class="form-group">
                             <inputContainer-component titulo="Data início período">
-                                <input type="text" class="form-control mb-2" v-model="$store.state.item.data_inicio_periodo">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.data_inicio_periodo | dataParaLocacoes">
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
                             <inputContainer-component titulo="Data final previsto período">
-                                <input type="text" class="form-control mb-2" v-model="$store.state.item.data_final_previsto_periodo">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.data_final_previsto_periodo | dataParaLocacoes">
                             </inputContainer-component>                        
                         </div>
                         <div class="form-group">
                             <inputContainer-component titulo="Data final realizado periodo">
-                                <input type="text" class="form-control mb-2" v-model="$store.state.item.data_final_realizado_periodo">
+                                <input type="text" class="form-control mb-2" :value="$store.state.item.data_final_realizado_periodo | dataParaLocacoes">
                             </inputContainer-component>                        
                         </div>
                     </template>
@@ -310,6 +316,8 @@
                 kmFinal: '',
                 transacaoDetalhes: [],
                 locacoes: { data:[] },
+                carros: { data:[] },
+                clientes: { data:[] },
                 buscar: {
                     id: '',
                     data_inicio_periodo: ''
