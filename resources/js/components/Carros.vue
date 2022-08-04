@@ -75,16 +75,17 @@
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="modelo_id" titulo="Modelo id">
-                        <select class="form-select" name="modelo_id" id="modelo_id" v-if="carros.data != ''">
+                    <inputContainer-component id="modelo_id" titulo="Modelo">
+                        <select class="form-select" v-model="modelo_id">
                             <option value="">-- Selecione --</option>          
-                            <option v-for="dados in carros.data" :key="dados.id" :value="dados.modelo_id">{{ dados.modelo_id }}</option>
+                            <option v-for="mo in modelos.data" :key="mo.id" :value="mo.id">{{ mo.nome }}</option>
                         </select>
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="disponivel" titulo="Disponivel">
-                        <select class="form-select" name="disponivel" id="disponivel">
+                        <select class="form-select" v-model="disponivel">
+                            <option value="">-- Selecione --</option>
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>   
                         </select>
@@ -110,12 +111,12 @@
                         <input type="text" class="form-control mb-2" :value="$store.state.item.id" disabled>
                     </inputContainer-component>
 
-                    <inputContainer-component titulo="Carro">
+                    <inputContainer-component titulo="Placa">
                         <input type="text" class="form-control mb-2" :value="$store.state.item.placa" disabled>
                     </inputContainer-component>
 
                     <inputContainer-component titulo="Data de cadastro">
-                        <input type="text" class="form-control mb-2" :value="$store.state.item.created_at" disabled>
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.created_at | formataData" disabled>
                     </inputContainer-component>
             </template>
             <template v-slot:rodape>
@@ -159,10 +160,10 @@
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
-                    <inputContainer-component id="AtualizaDisponibilidade" titulo="Disponibilidade">
+                    <inputContainer-component id="AtualizaDisponibilidade" titulo="Disponivel">
                         <select class="form-select" name="AtualizaDisponibilidade" id="AtualizaDisponibilidade">
-                            <option :value="$store.state.item.disponivel">{{ $store.state.item.disponivel }}</option>
-                            <option :value="$store.state.item.disponivel == 'Sim' ? 'Não' : 'Sim'">{{ $store.state.item.disponivel == 'Sim' ? 'Não' : 'Sim' }}</option>   
+                            <option :value="$store.state.item.disponivel">{{ $store.state.item.disponivel }}</option> 
+                            <option :value="$store.state.item.disponivel == 'Sim' ? 'Não' : 'Sim'">{{ $store.state.item.disponivel == 'Sim' ? 'Não' : 'Sim' }}</option>  
                         </select>
                     </inputContainer-component>
                 </div>
@@ -184,6 +185,7 @@
         data(){
             return {
                 urlBase: 'http://localhost:8000/api/v1/carro',
+                urlModelos: 'http://localhost:8000/api/v1/modelo',
                 urlPage: '',
                 urlFiltro: '',
                 transacaoStatus: '',
@@ -193,6 +195,7 @@
                 km: '',
                 transacaoDetalhes: [],
                 carros: { data:[] },
+                modelos: { data:[] },
                 buscar: {
                     id: '',
                     placa: ''
@@ -288,10 +291,17 @@
             },
             carregarLista(){
                 let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
+                let urlModelos = this.urlModelos + '?' + this.urlPage + this.urlFiltro
 
                 axios.get(url)
                 .then(response => {
                     this.carros = response.data
+                    console.log(this.carros)
+
+                    axios.get(urlModelos)
+                        .then(response => {
+                            this.modelos = response.data
+                        })
                 })
                 .catch(errors => {
                     console.log(errors)

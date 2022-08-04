@@ -20,8 +20,8 @@ class CreateModelosTable extends Migration
             $table->string('imagem', 100);
             $table->integer('numero_portas');
             $table->integer('lugares');
-            $table->boolean('air_bag');
-            $table->boolean('abs');
+            $table->string('air_bag',3);
+            $table->string('abs',3);
             $table->timestamps();
     
             //foreign key (constraints)

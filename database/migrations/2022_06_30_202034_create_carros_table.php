@@ -17,7 +17,7 @@ class CreateCarrosTable extends Migration
             $table->id();
             $table->unsignedBigInteger('modelo_id');
             $table->string('placa', 10)->unique();
-            $table->boolean('disponivel');
+            $table->string('disponivel', 3);
             $table->integer('km');
             $table->timestamps();
     

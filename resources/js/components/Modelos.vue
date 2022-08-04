@@ -72,7 +72,10 @@
             <template v-slot:conteudo>
                 <div class="form-group">
                     <inputContainer-component id="marca_id" titulo="Marca">
-                        <input type="text" class="form-control mb-2" id="marca_id" placeholder="ID da marca" v-model="marca_id">
+                        <select class="form-select" name="marca_id" id="marca_id" v-model="marca_id">
+                            <option value="">Selecione uma marca</option>
+                            <option v-for="mi in marcas.data" :key="mi.id" :value="mi.id">{{ mi.nome }}</option>
+                        </select>
                     </inputContainer-component>
                 </div>
                 <div class="form-group">
@@ -97,7 +100,7 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="air_bag" titulo="Air bag">
-                        <select class="form-select" name="air_bag" id="air_bag">
+                        <select class="form-select" v-model="air_bag">
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
                         </select>
@@ -105,7 +108,7 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="abs" titulo="Abs">
-                        <select class="form-select" name="abs" id="abs">
+                        <select class="form-select" v-model="abs">
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
                         </select>
@@ -143,11 +146,11 @@
                     </inputContainer-component>
 
                     <inputContainer-component titulo="Air bag">
-                        <input type="text" class="form-control mb-2" :value="$store.state.item.air_bag == 1 ? 'Sim' : 'Não'" disabled>
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.air_bag" disabled>
                     </inputContainer-component>
 
                     <inputContainer-component titulo="ABS">
-                        <input type="text" class="form-control mb-2" :value="$store.state.item.abs == 1 ? 'Sim' : 'Não'" disabled>
+                        <input type="text" class="form-control mb-2" :value="$store.state.item.abs" disabled>
                     </inputContainer-component>
 
                     <inputContainer-component titulo="Data de cadastro">
@@ -249,6 +252,7 @@
         data(){
             return {
                 urlBase: 'http://localhost:8000/api/v1/modelo',
+                urlBaseMarcas: 'http://localhost:8000/api/v1/marca',
                 urlPage: '',
                 urlFiltro: '',
                 nome: '',
@@ -260,6 +264,7 @@
                 transacaoStatus: '',
                 transacaoDetalhes: [],
                 modelos: { data:[] },
+                marcas: { data:[] },
                 buscar: {
                     id: '',
                     nome: ''
@@ -363,11 +368,17 @@
             },
             carregarLista(){
                 let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
+                let urlMarcas = this.urlBaseMarcas + '?' + this.urlPage + this.urlFiltro
 
                 axios.get(url)
                 .then(response => {
                     this.modelos = response.data
                     console.log(this.modelos)
+
+                    axios.get(urlMarcas)
+                        .then(response => {
+                            this.marcas = response.data
+                        })
                 })
                 .catch(errors => {
                     console.log(errors)
@@ -406,7 +417,7 @@
                 })
                 .catch(errors => {
                     this.$store.state.transacao.status = 'erro'
-                    this.$store.state.transacao.mensagem = errors.data.msg
+                    this.$store.state.transacao.dados = errors.response.data.errors
                     
                 })
             }

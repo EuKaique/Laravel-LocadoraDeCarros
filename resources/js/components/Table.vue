@@ -11,7 +11,7 @@
             <tr v-for="c in dadosCarros" :key="c.id">
                 <th scope="row">{{ c.id }}</th>
                 <td>{{ c.placa }}</td>
-                <td>{{ c.disponivel == 1 ? 'Sim' : 'Não' }}</td>
+                <td>{{ c.disponivel }}</td>
                 <td>{{ c.created_at | formataData }}</td>
                 <td>
                     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(c)">Ver</button>
@@ -37,7 +37,7 @@
                 <td>{{ d.nome }}</td>
                 <td><img :src="'/storage/' + d.imagem" width="40" height="30"></td>
                 <td>{{ d.numero_portas }}</td>
-                <td>{{ d.air_bag == 1 ? 'Sim' : 'Não' }}</td>
+                <td>{{ d.air_bag }}</td>
                 <td>{{ d.created_at | formataData }}</td>
                 <td>
                     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modalVisualizar" @click="getId(d)">Ver</button>

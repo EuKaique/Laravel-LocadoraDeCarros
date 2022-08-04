@@ -28,8 +28,8 @@ class Modelo extends Model
             'imagem'        => 'required|file|mimes:png,jpeg',
             'numero_portas' => 'required|integer|digits_between:1,5',
             'lugares'       => 'required|integer|digits_between:1,8',
-            'air_bag'       => 'required|boolean',
-            'abs'           => 'required|boolean'
+            'air_bag'       => 'required',
+            'abs'           => 'required'
         ];
     }
     /*
