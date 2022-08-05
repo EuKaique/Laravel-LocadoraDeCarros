@@ -78,7 +78,7 @@
                         <div class="form-group">
                             <inputContainer-component id="cpf">
                                 <label for="cpf" class="form-label">CPF</label>
-                                <input type="text" class="form-control mb-2" id="cpf" placeholder="CPF do cliente" v-model="cpfCliente">
+                                <input type="text" class="form-control mb-2" id="cpf" placeholder="CPF do cliente" v-model="cpfCliente" v-mask="'###.###.###-##'">
                             </inputContainer-component>
                         </div>
                     </template>
@@ -154,7 +154,7 @@
                         </div>
                         <div class="form-group">
                             <inputContainer-component id="atualizarCpf">
-                                <input type="text" class="form-control mb-2" id="atualizarCpf" placeholder="Cpf do cliente" v-model="$store.state.item.cpf">
+                                <input type="text" class="form-control mb-2" id="atualizarCpf" placeholder="Cpf do cliente" v-model="$store.state.item.cpf" v-mask="'###.###.###-##'">
                             </inputContainer-component>
                         </div>
                     </template>

@@ -72,7 +72,7 @@
             <template v-slot:conteudo>
                 <div class="form-group">
                     <inputContainer-component id="marca_id" titulo="Marca">
-                        <select class="form-select" name="marca_id" id="marca_id" v-model="marca_id">
+                        <select class="form-select" v-model="marca_id" v-if="marcas.data != ''">
                             <option value="">Selecione uma marca</option>
                             <option v-for="mi in marcas.data" :key="mi.id" :value="mi.id">{{ mi.nome }}</option>
                         </select>
@@ -100,7 +100,7 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="air_bag" titulo="Air bag">
-                        <select class="form-select" v-model="air_bag">
+                        <select class="form-select" v-model="air_bag" v-if="modelos.data != ''">
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
                         </select>
@@ -108,7 +108,7 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="abs" titulo="Abs">
-                        <select class="form-select" v-model="abs">
+                        <select class="form-select" v-model="abs" v-if="modelos.data != ''">
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
                         </select>
@@ -219,7 +219,7 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="air_bag" titulo="Air bag">
-                        <select class="form-select" name="air_bag" id="air_bag">
+                        <select class="form-select" name="air_bag" id="air_bag" v-if="modelos.data != ''">
                             <option :value="$store.state.item.air_bag">{{ $store.state.item.air_bag }}</option>
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>
@@ -228,7 +228,7 @@
                 </div>
                 <div class="form-group">
                     <inputContainer-component id="abs" titulo="Abs">
-                        <select class="form-select" name="abs" id="abs">
+                        <select class="form-select" name="abs" id="abs" v-if="modelos.data != ''">
                             <option :value="$store.state.item.abs">{{ $store.state.item.abs }}</option>
                             <option value="Sim">Sim</option>
                             <option value="Não">Não</option>

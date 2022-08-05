@@ -9,8 +9,10 @@ require('./bootstrap');
 window.Vue = require('vue').default;
 
 import Vuex from 'Vuex';
+import VueMask from "v-mask";
 
 Vue.use(Vuex);
+Vue.use(VueMask);
 
 Vue.filter('formataData', function(t){
     if(!t){

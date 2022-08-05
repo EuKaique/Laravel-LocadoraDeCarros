@@ -71,18 +71,18 @@
                     </template>
                     <template v-slot:conteudo>
                         <div class="form-group">
-                            <inputContainer-component id="Cliente_id" titulo="Cliente_id">
-                                <select class="form-select" v-model="Cliente_id" v-if="locacoes.data != ''">
+                            <inputContainer-component id="Cliente_id" titulo="Cliente">
+                                <select class="form-select" v-model="Cliente_id"  v-if="clientes.data != ''">
                                     <option value="">-- Selecione --</option>          
-                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.cliente_id">{{ dados.cliente_id }}</option>
+                                    <option v-for="cliente in clientes.data" :key="cliente.id" :value="cliente.id">{{ cliente.nome }}</option>
                                 </select>
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
-                            <inputContainer-component id="Carro_id" titulo="Carro_id">
-                                <select class="form-select" v-model="Carro_id" v-if="locacoes.data != ''">
+                            <inputContainer-component id="Carro_id" titulo="Carro">
+                                <select class="form-select" v-model="Carro_id" v-if="carros.data != ''">
                                     <option value="">-- Selecione --</option>          
-                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.carro_id">{{ dados.carro_id }}</option>
+                                    <option v-for="carro in carros.data" :key="carro.id" :value="carro.id">{{ carro.placa }}</option>
                                 </select>
                             </inputContainer-component>
                         </div>
@@ -238,17 +238,17 @@
                     <template v-slot:conteudo>
                         <div class="form-group">
                             <inputContainer-component id="atualizarClienteID" titulo="Cliente ID">
-                                <select class="form-select" name="cliente_id" id="cliente_id" v-if="locacoes.data != ''">
+                                <select class="form-select" v-model="Cliente_id"  v-if="clientes.data != ''">
                                     <option value="">-- Selecione --</option>          
-                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.cliente_id">{{ dados.cliente_id }}</option>
+                                    <option v-for="cliente in clientes.data" :key="cliente.id" :value="cliente.id">{{ cliente.nome }}</option>
                                 </select>
                             </inputContainer-component>
                         </div>
                         <div class="form-group">
                             <inputContainer-component id="atualizarCarroID" titulo="Carro ID">
-                                <select class="form-select" name="carro_id" id="carro_id" v-if="locacoes.data != ''">
+                                <select class="form-select" v-model="Carro_id" v-if="carros.data != ''">
                                     <option value="">-- Selecione --</option>          
-                                    <option v-for="dados in locacoes.data" :key="dados.id" :value="dados.carro_id">{{ dados.carro_id }}</option>
+                                    <option v-for="carro in carros.data" :key="carro.id" :value="carro.id">{{ carro.placa }}</option>
                                 </select>
                             </inputContainer-component>
                         </div>
@@ -303,6 +303,8 @@
         data(){
             return {
                 urlBase: 'http://localhost:8000/api/v1/locacao',
+                urlClientes: 'http://localhost:8000/api/v1/cliente',
+                urlCarros: 'http://localhost:8000/api/v1/carro',
                 urlPage: '',
                 urlFiltro: '',
                 transacaoStatus: '',
@@ -418,12 +420,24 @@
                 document.location.reload(true)
             },
             carregarLista(){
-                let url = this.urlBase + '?' + this.urlPage + this.urlFiltro
+                let url         = this.urlBase + '?' + this.urlPage + this.urlFiltro
+                let urlClientes = this.urlClientes + '?' + this.urlPage + this.urlFiltro
+                let urlCarros   = this.urlCarros + '?' + this.urlPage + this.urlFiltro
 
                 axios.get(url)
                 .then(response => {
                     this.locacoes = response.data
-                    console.log(this.locacoes)
+
+                    axios.get(urlClientes)
+                        .then(response => {
+                            this.clientes = response.data
+
+                            axios.get(urlCarros)
+                                .then(response => {
+                                    this.carros = response.data
+
+                                })
+                        })
                 })
                 .catch(errors => {
                     console.log(errors)
